@@ -1,11 +1,12 @@
-import mongoose from 'mongoose'
+import { model, Schema } from "mongoose";
+import { IOrder } from "../utils/interface";
 
-const orderSchema = mongoose.Schema(
+const orderSchema:Schema = new Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       required: true,
-      ref: 'User',
+      ref: "User",
     },
     orderItems: [
       {
@@ -14,9 +15,9 @@ const orderSchema = mongoose.Schema(
         image: { type: String, required: true },
         price: { type: Number, required: true },
         product: {
-          type: mongoose.Schema.Types.ObjectId,
+          type: Schema.Types.ObjectId,
           required: true,
-          ref: 'Product',
+          ref: "Product",
         },
       },
     ],
@@ -70,9 +71,7 @@ const orderSchema = mongoose.Schema(
   },
   {
     timestamps: true,
-  }
-)
+  });
 
-const Order = mongoose.model('Order', orderSchema)
-
-export default Order
+const Order = model < IOrder > ("Order", orderSchema);
+export default Order;

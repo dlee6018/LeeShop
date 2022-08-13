@@ -1,7 +1,8 @@
-import mongoose from 'mongoose'
+import {model, Schema} from 'mongoose'
 import bcrypt from 'bcryptjs'
+import {IUser} from '../utils/interface'
 
-const userSchema = mongoose.Schema(
+const userSchema = new Schema<IUser>(
   {
     name: {
       type: String,
@@ -40,6 +41,6 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt)
 })
 
-const User = mongoose.model('User', userSchema)
+const User = model('User', userSchema)
 
 export default User
