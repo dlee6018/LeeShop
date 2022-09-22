@@ -1,98 +1,90 @@
-import React, { useEffect } from 'react'
-import { LinkContainer } from 'react-router-bootstrap'
-import { Table, Button, Row, Col } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
-import Message from '../components/Message'
-import Loader from '../components/Loader'
-import Paginate from '../components/Paginate'
+import React, { useEffect, useState } from "react";
+import { LinkContainer } from "react-router-bootstrap";
+import { Table, Button, Row, Col } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import Message from "../components/Message";
+import Loader from "../components/Loader";
+import Paginate from "../components/Paginate";
+import { PRODUCT_CREATE_RESET } from "../constants/productConstants";
 import {
-  listProducts,
   deleteProduct,
+  getAllProducts,
+  getProductsError,
+  getProductsStatus,
+  selectAllProducts,
   createProduct,
-} from '../actions/productActions'
-import { PRODUCT_CREATE_RESET } from '../constants/productConstants'
+} from "../features/products/productSlice";
+import { getUserInfo } from "../features/users/userSlice";
 
 const ProductListScreen = ({ history, match }) => {
-  const pageNumber = match.params.pageNumber || 1
+  const pageNumber = match.params.pageNumber || 1;
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const productList = useSelector((state) => state.productList)
-  const { loading, error, products, page, pages } = productList
+  const products = useSelector(selectAllProducts);
+  const page = useSelector((state) => state.products.page);
+  const pages = useSelector((state) => state.products.pages);
 
-  const productDelete = useSelector((state) => state.productDelete)
-  const {
-    loading: loadingDelete,
-    error: errorDelete,
-    success: successDelete,
-  } = productDelete
+  const status = useSelector(getProductsStatus);
+  const error = useSelector(getProductsError);
 
-  const productCreate = useSelector((state) => state.productCreate)
-  const {
-    loading: loadingCreate,
-    error: errorCreate,
-    success: successCreate,
-    product: createdProduct,
-  } = productCreate
+  // const productCreate = useSelector((state) => state.productCreate);
+  // const {
+  //   loading: loadingCreate,
+  //   error: errorCreate,
+  //   success: successCreate,
+  //   product: createdProduct,
+  // } = productCreate;
 
-  const userLogin = useSelector((state) => state.userLogin)
-  const { userInfo } = userLogin
+  const [successDelete, setSuccessDelete] = useState(false);
+  // const [successCreate, setSuccessCreate] = useState(false);
+  const successCreate = useSelector((state) => state.products.createdStatus);
+  const userInfo = useSelector(getUserInfo);
 
   useEffect(() => {
-    dispatch({ type: PRODUCT_CREATE_RESET })
-
-    if (!userInfo || !userInfo.isAdmin) {
-      history.push('/login')
+    if (!userInfo.isAdmin) {
+      history.push("/login");
     }
-
     if (successCreate) {
-      history.push(`/admin/product/${createdProduct._id}/edit`)
+      const createdProduct = products.at(-1);
+      history.push(`/admin/product/${createdProduct._id}/edit`);
     } else {
-      dispatch(listProducts('', pageNumber))
+      dispatch(getAllProducts("", pageNumber));
     }
-  }, [
-    dispatch,
-    history,
-    userInfo,
-    successDelete,
-    successCreate,
-    createdProduct,
-    pageNumber,
-  ])
+    setSuccessDelete(false);
+    // dispatch(getAllProducts("", pageNumber));
+  }, [dispatch, history, userInfo, successCreate, pageNumber, successDelete]);
 
   const deleteHandler = (id) => {
-    if (window.confirm('Are you sure')) {
-      dispatch(deleteProduct(id))
+    if (window.confirm("Are you sure")) {
+      dispatch(deleteProduct(id));
+      setSuccessDelete(true);
     }
-  }
+  };
 
   const createProductHandler = () => {
-    dispatch(createProduct())
-  }
+    dispatch(createProduct());
+  };
 
   return (
     <>
-      <Row className='align-items-center'>
+      <Row className="align-items-center">
         <Col>
           <h1>Products</h1>
         </Col>
-        <Col className='text-right'>
-          <Button className='my-3' onClick={createProductHandler}>
-            <i className='fas fa-plus'></i> Create Product
+        <Col className="text-right">
+          <Button className="my-3" onClick={createProductHandler}>
+            <i className="fas fa-plus"></i> Create Product
           </Button>
         </Col>
       </Row>
-      {loadingDelete && <Loader />}
-      {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
-      {loadingCreate && <Loader />}
-      {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
-      {loading ? (
+      {status === "loading" ? (
         <Loader />
-      ) : error ? (
-        <Message variant='danger'>{error}</Message>
+      ) : status == "error" ? (
+        <Message variant="danger">{error}</Message>
       ) : (
         <>
-          <Table striped bordered hover responsive className='table-sm'>
+          <Table striped bordered hover responsive className="table-sm">
             <thead>
               <tr>
                 <th>ID</th>
@@ -113,16 +105,16 @@ const ProductListScreen = ({ history, match }) => {
                   <td>{product.brand}</td>
                   <td>
                     <LinkContainer to={`/admin/product/${product._id}/edit`}>
-                      <Button variant='light' className='btn-sm'>
-                        <i className='fas fa-edit'></i>
+                      <Button variant="light" className="btn-sm">
+                        <i className="fas fa-edit"></i>
                       </Button>
                     </LinkContainer>
                     <Button
-                      variant='danger'
-                      className='btn-sm'
+                      variant="danger"
+                      className="btn-sm"
                       onClick={() => deleteHandler(product._id)}
                     >
-                      <i className='fas fa-trash'></i>
+                      <i className="fas fa-trash"></i>
                     </Button>
                   </td>
                 </tr>
@@ -133,7 +125,7 @@ const ProductListScreen = ({ history, match }) => {
         </>
       )}
     </>
-  )
-}
+  );
+};
 
-export default ProductListScreen
+export default ProductListScreen;

@@ -8,21 +8,6 @@ import { Request, RequestHandler, Response } from 'express'
 const getProducts = asyncHandler(async (req:Request, res: Response) => {
   const MAX_ITEM_PER_PAGE = 10;
   const page = Number(req.query.pageNumber) || 1;
-
-  //req.query = after ? in url
-  // let keyword
-  // if (req.query.keyboard == keyword){
-  //   keyword = {
-  //     name:{
-  //       $regex: req.query.keyword,
-  //       $options: "i",
-  //     }
-  //   }
-  // }else{
-  //   keyword = {}
-  // }
-  
-
   const keyword:any = req.query.keyword
     ? {
         name: {
@@ -31,9 +16,6 @@ const getProducts = asyncHandler(async (req:Request, res: Response) => {
         },
       } 
     : {};
-
-  console.log(keyword, "Keyword");
-
   const count = await Product.countDocuments({ ...keyword });
   const products = await Product.find({ ...keyword })
     .limit(MAX_ITEM_PER_PAGE)
@@ -41,11 +23,6 @@ const getProducts = asyncHandler(async (req:Request, res: Response) => {
 
   res.json({ products, page, pages: Math.ceil(count / MAX_ITEM_PER_PAGE) });
 });
-
-// @desc    Fetch single product
-// @route   GET /api/products/:id
-// @access  Public
-
 
 const getProductById = asyncHandler(async (req:Request, res: Response) => {
   const product = await Product.findById(req.params.id);
