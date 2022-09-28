@@ -23,10 +23,12 @@ export interface IShippingAddress{
 //     email_address: string
 // }
 interface Review {
+    _id: string,
     name: string,
     rating: number,
     comment: string,
-    user: string
+    user: string,
+    createdAt: string,
 }
 
 // export interface IOrder extends Document{
@@ -44,6 +46,7 @@ interface Review {
 //     deliveredAt: Date
 // }
 
+
 export interface IProduct{
     _id: string,
     name: string,
@@ -58,12 +61,16 @@ export interface IProduct{
     countInStock: number,
 }
 
+export interface IProductDetails{
+
+}
+
 export interface IUserInfo {
     name: string,
     email:string,
     password: string,
     isAdmin: boolean,
     _id: string,
-    token: string
+    token: string,
 }
 

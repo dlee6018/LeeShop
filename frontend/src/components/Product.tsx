@@ -2,10 +2,20 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { Card } from 'react-bootstrap'
 import Rating from './Rating'
+import {IProduct} from '../types/utils'
 
-const Product = ({ product }) => {
+interface ProductProps {
+  product: Product
+}
+
+interface Product extends IProduct{
+  rating: number
+}
+const Product = ({ product }: any) => {
+
   return (
-    <Card className='my-3 p-3 rounded'>
+    <>
+      <Card className='my-3 p-3 rounded'>
       <Link to={`/product/${product._id}`}>
         <Card.Img src={product.image} variant='top' />
       </Link>
@@ -19,7 +29,7 @@ const Product = ({ product }) => {
 
         <Card.Text as='div'>
           <Rating
-            value={product.rating}
+            value={product.rating || 0}
             text={`${product.numReviews} reviews`}
           />
         </Card.Text>
@@ -27,6 +37,7 @@ const Product = ({ product }) => {
         <Card.Text as='h3'>${product.price}</Card.Text>
       </Card.Body>
     </Card>
+    </>
   )
 }
 

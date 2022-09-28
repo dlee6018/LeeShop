@@ -6,14 +6,13 @@ import Message from "../components/Message";
 import Loader from "../components/Loader";
 import FormContainer from "../components/FormContainer";
 import {
-  selectAllUsers,
   getUsersStatus,
   getUsersError,
   login,
   getUserInfo,
 } from "../features/users/userSlice";
 
-const LoginScreen = ({ location, history }) => {
+const LoginScreen = ({ location, history }: {location:any, history:any}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -26,12 +25,12 @@ const LoginScreen = ({ location, history }) => {
   const redirect = location.search ? location.search.split("=")[1] : "/";
 
   useEffect(() => {
-    if (userInfo) {
+    if (userInfo && userInfo.name) {
       history.push(redirect);
     }
   }, [history, userInfo, redirect]);
 
-  const submitHandler = (e) => {
+  const submitHandler = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(login({ email, password }));
   };

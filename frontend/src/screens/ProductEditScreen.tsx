@@ -26,7 +26,7 @@ const ProductEditScreen = ({ match, history }: {match: any, history: any}) => {
   const [description, setDescription] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  const successUpdate = useSelector((state:RootState) => state.products.updatedStatus);
+  const updatedStatus = useSelector((state:RootState) => state.products.updatedStatus);
   const dispatch = useDispatch();
 
   const product = useSelector(selectProductDetails);
@@ -34,7 +34,7 @@ const ProductEditScreen = ({ match, history }: {match: any, history: any}) => {
   const error = useSelector(getProductsError);
 
   useEffect(() => {
-    if (successUpdate) {
+    if (updatedStatus === "succeeded") {
       history.push("/admin/productlist");
     } else {
       if (!product) {
@@ -49,7 +49,7 @@ const ProductEditScreen = ({ match, history }: {match: any, history: any}) => {
         setDescription(product.description);
       }
     }
-  }, [dispatch, history, productId, product, successUpdate]);
+  }, [dispatch, history, productId, product, updatedStatus]);
 
   const uploadFileHandler = async (e:React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files){

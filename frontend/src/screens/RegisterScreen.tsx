@@ -5,34 +5,42 @@ import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { register } from '../actions/userActions'
+import { useAppSelector } from '../types/hooks'
+import { getUserInfo, getUsersError,register } from '../features/users/userSlice'
 
-const RegisterScreen = ({ location, history }) => {
+interface RegisterScreenProps{
+  location: any,
+  history:any
+}
+const RegisterScreen = ({ location, history }:RegisterScreenProps) => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [message, setMessage] = useState(null)
+  const [message, setMessage] = useState("")
 
   const dispatch = useDispatch()
 
-  const userRegister = useSelector((state) => state.userRegister)
-  const { loading, error, userInfo } = userRegister
+  // const userRegister = useSelector((state) => state.userRegister)
+  // const { loading, error, userInfo } = userRegister
+  const userInfo = useAppSelector(getUserInfo)
+  const registerStatus = useAppSelector((state) => state.users.registerStatus)
 
+  const error = useAppSelector(getUsersError)
   const redirect = location.search ? location.search.split('=')[1] : '/'
 
   useEffect(() => {
-    if (userInfo) {
+    if (userInfo && userInfo.name) {
       history.push(redirect)
     }
   }, [history, userInfo, redirect])
 
-  const submitHandler = (e) => {
+  const submitHandler = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (password !== confirmPassword) {
       setMessage('Passwords do not match')
     } else {
-      dispatch(register(name, email, password))
+      dispatch(register({name, email, password}))
     }
   }
 
@@ -41,7 +49,7 @@ const RegisterScreen = ({ location, history }) => {
       <h1>Sign Up</h1>
       {message && <Message variant='danger'>{message}</Message>}
       {error && <Message variant='danger'>{error}</Message>}
-      {loading && <Loader />}
+      {registerStatus==="loading" && <Loader />}
       <Form onSubmit={submitHandler}>
         <Form.Group controlId='name'>
           <Form.Label>Name</Form.Label>

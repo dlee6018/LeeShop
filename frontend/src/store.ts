@@ -2,19 +2,11 @@ import { combineReducers } from "redux";
 import { useDispatch } from "react-redux";
 import { configureStore} from "@reduxjs/toolkit";
 import {
-  productListReducer,
-  productDetailsReducer,
-  productDeleteReducer,
-  productCreateReducer,
-  productUpdateReducer,
   productReviewCreateReducer,
-  productTopRatedReducer,
 } from "./reducers/productReducers";
 import { cartReducer } from "./reducers/cartReducers";
 import {
-  userLoginReducer,
   userRegisterReducer,
-  userDetailsReducer,
   userUpdateProfileReducer,
   userListReducer,
   userDeleteReducer,
@@ -30,19 +22,12 @@ import {
 } from "./reducers/orderReducers";
 import productsReducer from "./features/products/productSlice";
 import usersReducer from "./features/users/userSlice";
-import { IUserInfo, IShippingAddress } from "./types/utils";
+import cartsReducer from './features/cart/cartSlice'
 
 const rootReducer = combineReducers({
   products: productsReducer,
   users: usersReducer,
-  productReviewCreate: productReviewCreateReducer,
-  productTopRated: productTopRatedReducer,
-  cart: cartReducer,
-  userRegister: userRegisterReducer,
-  userUpdateProfile: userUpdateProfileReducer,
-  userList: userListReducer,
-  userDelete: userDeleteReducer,
-  userUpdate: userUpdateReducer,
+  cart: cartsReducer,
   orderCreate: orderCreateReducer,
   orderDetails: orderDetailsReducer,
   orderPay: orderPayReducer,
@@ -52,20 +37,6 @@ const rootReducer = combineReducers({
 
 });
 
-
-// export interface IUser{
-//   name: string,
-//   email:string,
-//   password: string,
-//   isAdmin: boolean
-// }
-// interface shippingAddress{
-//   address: string,
-//   city: string,
-//   postalCode: string,
-//   country: string
-// }
-
 const cartItemsFromStorage = JSON.parse(
   localStorage.getItem("cartItems") || "[]"
 );
@@ -74,19 +45,26 @@ const userInfoFromStorage = JSON.parse(
   localStorage.getItem("userInfo") || "[]"
 );
 
-
 const shippingAddressFromStorage = JSON.parse(
   localStorage.getItem("shippingAddress") || "[]"
 );
 
 const preloadedState = {
-  // cart: {
-  //   cartItems: cartItemsFromStorage,
-  //   shippingAddress: shippingAddressFromStorage,
-  // },
+  cart: {
+    cartItems: cartItemsFromStorage,
+    shippingAddress: shippingAddressFromStorage,
+  },
   users: { 
     status: null,
     error:null,
+    profileUpdateStatus: null,
+    userUpdateStatus: null,
+    registerStatus: null,
+    userListStatus: null,
+    userDetails:{
+      status: null,
+      error: null,
+    },
     userInfo: userInfoFromStorage },
 };
 

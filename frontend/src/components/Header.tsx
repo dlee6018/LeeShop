@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom"
 import { Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
@@ -12,6 +13,7 @@ import {
 } from "../features/users/userSlice";
 
 const Header = () => {
+  const history = useHistory()
   const dispatch = useDispatch();
 
   const [loggedIn, setLoggedIn] = useState(false);
@@ -21,7 +23,7 @@ const Header = () => {
 
   const logoutHandler = () => {
     dispatch(logout());
-
+    history.push('/')
   };
 
   return (
@@ -40,7 +42,7 @@ const Header = () => {
                   <i className="fas fa-shopping-cart"></i> Cart
                 </Nav.Link>
               </LinkContainer>
-              {userInfo? (
+              {userInfo && userInfo.name? (
                 <NavDropdown title={userInfo.name} id="username">
                   <LinkContainer to="/profile">
                     <NavDropdown.Item>Profile</NavDropdown.Item>

@@ -15,19 +15,14 @@ import Message from "../components/Message";
 import Loader from "../components/Loader";
 import Meta from "../components/Meta";
 import {
-  listProductDetails,
-  createProductReview,
-} from "../actions/productActions";
-import { PRODUCT_CREATE_REVIEW_RESET } from "../constants/productConstants";
-import {
   getProductsStatus,
   getProductsError,
   getProductDetails,
-  selectAllProducts,
   selectProductDetails,
 } from "../features/products/productSlice";
 import { getUserInfo } from "../features/users/userSlice";
 import { useAppSelector } from "../types/hooks";
+import { createProductReview } from "../features/products/productSlice";
 
 const ProductScreen = ({ history, match }: {history: any, match:any}) => {
   const productId = match.params.id;
@@ -37,22 +32,16 @@ const ProductScreen = ({ history, match }: {history: any, match:any}) => {
 
   const dispatch = useDispatch();
 
-  // const productDetails = useSelector((state) => state.productDetails);
-
-  // const { loading, error, product } = productDetails;
-
   const product = useAppSelector(selectProductDetails);
   const status = useAppSelector(getProductsStatus);
   const error = useAppSelector(getProductsError);
 
   const userInfo = useAppSelector(getUserInfo);
 
-  // const productReviewCreate = useSelector((state) => state.productReviewCreate);
-  // const {
-  //   success: successProductReview,
-  //   loading: loadingProductReview,
-  //   error: errorProductReview,
-  // } = productReviewCreate;
+
+  const reviewStatus = useAppSelector((state) => state.products.productReview.status)
+  const reviewError= useAppSelector((state) => state.products.productReview.error)
+
 
   useEffect(() => {
     dispatch(getProductDetails(productId));
@@ -62,12 +51,15 @@ const ProductScreen = ({ history, match }: {history: any, match:any}) => {
     history.push(`/cart/${match.params.id}?qty=${qty}`);
   };
 
-  const submitHandler = (e:React.ChangeEvent<HTMLInputElement>) => {
+  const submitHandler = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(
-      createProductReview(match.params.id, {
-        rating,
-        comment,
+      createProductReview({
+        productId: match.params.id,
+        review: {
+          rating,
+          comment
+        }
       })
     );
   };
@@ -98,7 +90,7 @@ const ProductScreen = ({ history, match }: {history: any, match:any}) => {
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Rating
-                    value={product.rating}
+                    value={product.rating || 0}
                     text={`${product.numReviews} reviews`}
                   />
                 </ListGroup.Item>
@@ -167,11 +159,11 @@ const ProductScreen = ({ history, match }: {history: any, match:any}) => {
             </Col>
           </Row>
           <Row>
-            {/* <Col md={6}>
+            <Col md={6}>
               <h2>Reviews</h2>
-              {product.reviews.length === 0 && <Message>No Reviews</Message>}
+              {product.reviews && product.reviews.length === 0 && <Message>No Reviews</Message>}
               <ListGroup variant="flush">
-                {product.reviews.map((review) => (
+                {product.reviews && product.reviews.map((review) => (
                   <ListGroup.Item key={review._id}>
                     <strong>{review.name}</strong>
                     <Rating value={review.rating} />
@@ -181,23 +173,23 @@ const ProductScreen = ({ history, match }: {history: any, match:any}) => {
                 ))}
                 <ListGroup.Item>
                   <h2>Write a Customer Review</h2>
-                  {successProductReview && (
+                  {reviewStatus === "succeeded" && (
                     <Message variant="success">
                       Review submitted successfully
                     </Message>
                   )}
-                  {loadingProductReview && <Loader />}
-                  {errorProductReview && (
-                    <Message variant="danger">{errorProductReview}</Message>
-                  )} */}
-                  {/* {userInfo ? (
+                  {reviewStatus === "loading" && <Loader />}
+                  {reviewStatus === "failed" && (
+                    <Message variant="danger">{reviewError}</Message>
+                  )}
+                  {userInfo ? (
                     <Form onSubmit={submitHandler}>
                       <Form.Group controlId="rating">
                         <Form.Label>Rating</Form.Label>
                         <Form.Control
                           as="select"
                           value={rating}
-                          onChange={(e) => setRating(e.target.value)}
+                          onChange={(e:React.ChangeEvent<HTMLInputElement>) => setRating(Number(e.target.value))}
                         >
                           <option value="">Select...</option>
                           <option value="1">1 - Poor</option>
@@ -211,13 +203,13 @@ const ProductScreen = ({ history, match }: {history: any, match:any}) => {
                         <Form.Label>Comment</Form.Label>
                         <Form.Control
                           as="textarea"
-                          row="3"
+                          rows= {3}
                           value={comment}
                           onChange={(e) => setComment(e.target.value)}
                         ></Form.Control>
                       </Form.Group>
                       <Button
-                        disabled={loadingProductReview}
+                        disabled={reviewStatus === "loading"}
                         type="submit"
                         variant="primary"
                       >
@@ -228,10 +220,10 @@ const ProductScreen = ({ history, match }: {history: any, match:any}) => {
                     <Message>
                       Please <Link to="/login">sign in</Link> to write a review{" "}
                     </Message>
-                  )} */}
-                {/* </ListGroup.Item>
+                  )}
+                </ListGroup.Item>
               </ListGroup>
-            </Col> */}
+            </Col>
           </Row>
         </div>
         }

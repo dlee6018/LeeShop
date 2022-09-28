@@ -1,7 +1,14 @@
 import React from 'react'
 import { Helmet } from 'react-helmet'
 
-const Meta = ({ title, description, keywords }) => {
+// used to change meta title (better search results)
+interface MetaProps  {
+  title: string,
+  description: string,
+  keywords: string
+}
+
+const Meta = ({ title, description, keywords }:MetaProps) => {
   return (
     <Helmet>
       <title>{title}</title>

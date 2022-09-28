@@ -5,10 +5,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { getUserDetails, updateUser } from '../actions/userActions'
+import { getUserDetails, updateUser } from '../features/users/userSlice'
 import { USER_UPDATE_RESET } from '../constants/userConstants'
+import { useAppSelector } from '../types/hooks'
 
-const UserEditScreen = ({ match, history }) => {
+interface UserEditScreenProps{
+  match:any,
+  history:any
+}
+const UserEditScreen = ({ match, history }: UserEditScreenProps) => {
   const userId = match.params.id
 
   const [name, setName] = useState('')
@@ -17,22 +22,16 @@ const UserEditScreen = ({ match, history }) => {
 
   const dispatch = useDispatch()
 
-  const userDetails = useSelector((state) => state.userDetails)
-  const { loading, error, user } = userDetails
+  const userDetails = useAppSelector((state) => state.users.userDetails)
+  const { status, error, user } = userDetails
 
-  const userUpdate = useSelector((state) => state.userUpdate)
-  const {
-    loading: loadingUpdate,
-    error: errorUpdate,
-    success: successUpdate,
-  } = userUpdate
+  const updateStatus = useAppSelector((state) => state.users.userUpdateStatus)
 
   useEffect(() => {
-    if (successUpdate) {
-      dispatch({ type: USER_UPDATE_RESET })
+    if (updateStatus === "succeeded") {
       history.push('/admin/userlist')
     } else {
-      if (!user.name || user._id !== userId) {
+      if (!user || !user.name || user._id !== userId) {
         dispatch(getUserDetails(userId))
       } else {
         setName(user.name)
@@ -40,9 +39,9 @@ const UserEditScreen = ({ match, history }) => {
         setIsAdmin(user.isAdmin)
       }
     }
-  }, [dispatch, history, userId, user, successUpdate])
+  }, [dispatch, history, userId, user, updateStatus])
 
-  const submitHandler = (e) => {
+  const submitHandler = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     dispatch(updateUser({ _id: userId, name, email, isAdmin }))
   }
@@ -54,9 +53,9 @@ const UserEditScreen = ({ match, history }) => {
       </Link>
       <FormContainer>
         <h1>Edit User</h1>
-        {loadingUpdate && <Loader />}
-        {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
-        {loading ? (
+        {updateStatus === "loading" && <Loader />}
+        {updateStatus === "failed" && <Message variant='danger'>{error}</Message>}
+        {status === "loading" ? (
           <Loader />
         ) : error ? (
           <Message variant='danger'>{error}</Message>

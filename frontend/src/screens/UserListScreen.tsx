@@ -1,41 +1,50 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Table, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { listUsers, deleteUser } from '../actions/userActions'
+import { useAppSelector } from '../types/hooks'
+import { getUserInfo, getUsersError, getUsersStatus, listUsers, deleteUser } from '../features/users/userSlice'
+import { RootState } from '../store'
 
-const UserListScreen = ({ history }) => {
+interface UserListScreenProps{
+  history:any
+}
+const UserListScreen = ({ history }:UserListScreenProps) => {
   const dispatch = useDispatch()
 
-  const userList = useSelector((state) => state.userList)
-  const { loading, error, users } = userList
+  const users = useAppSelector((state) => state.users.userList)
+  const status = useAppSelector((state) => state.users.userListStatus)
+  const error = useAppSelector(getUsersError)
 
-  const userLogin = useSelector((state) => state.userLogin)
-  const { userInfo } = userLogin
+  const userInfo = useAppSelector(getUserInfo)
 
-  const userDelete = useSelector((state) => state.userDelete)
-  const { success: successDelete } = userDelete
+  // const userDelete = useSelector((state:RootState) => state.userDelete)
+  const [successDelete, setSuccessDelete] = useState(false)
+
+  // const { success: successDelete } = userDelete
 
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {
       dispatch(listUsers())
+      setSuccessDelete(false)
     } else {
       history.push('/login')
     }
-  }, [dispatch, history, successDelete, userInfo])
+  }, [dispatch, history, userInfo, successDelete])
 
-  const deleteHandler = (id) => {
+  const deleteHandler = (id:string) => {
     if (window.confirm('Are you sure')) {
       dispatch(deleteUser(id))
+      setSuccessDelete(true)
     }
   }
 
   return (
     <>
       <h1>Users</h1>
-      {loading ? (
+      {status === "loading" ? (
         <Loader />
       ) : error ? (
         <Message variant='danger'>{error}</Message>
@@ -51,7 +60,7 @@ const UserListScreen = ({ history }) => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
+            {users && users.map((user) => (
               <tr key={user._id}>
                 <td>{user._id}</td>
                 <td>{user.name}</td>

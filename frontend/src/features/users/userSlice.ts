@@ -6,11 +6,11 @@ import {
 import axios from "axios";
 import {IUserInfo} from '../../types/utils'
 
-type UserInfo = {
+type LoginInfo = {
   email: string,
   password: string
 }
-export const login = createAsyncThunk("users/login", async (userInfo:UserInfo) => {
+export const login = createAsyncThunk("users/login", async (userInfo:LoginInfo) => {
   try {
     const {email, password } = userInfo;
 
@@ -35,15 +35,194 @@ export const login = createAsyncThunk("users/login", async (userInfo:UserInfo) =
     throw new Error(errorMessage);
   }
 });
+// interface updateInfo extends IUserInfo{}
+export const updateUserProfile = createAsyncThunk<IUserInfo, IUserInfo, {state: RootState}>("users/updateProfile", async(updateInfo: IUserInfo, {getState}) => {
+  try{
+    const {
+      users: { userInfo },
+    } = getState()
+
+    if (!userInfo){
+      throw new Error("User not Logged In")
+    }
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    const { data } = await axios.put(`/api/users/profile`, {name: updateInfo.name, password: updateInfo.password, email: updateInfo.email}, config)
+    localStorage.setItem('userInfo', JSON.stringify(data))
+    return data
+  }catch(error:any){
+    const message =
+      error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    return message
+  }
+})
+
+export const register = createAsyncThunk("users/register", async({name, email, password}: {name: string, email: string, password: string}) =>{
+
+  try{
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+    const { data } = await axios.post(
+      '/api/users',
+      { name, email, password },
+      config
+    )
+    return data
+    
+  }catch(error:any){
+    const message = error.response && error.response.data.message
+    ? error.response.data.message
+    : error.message
+
+    return message
+  }
+})
+
+export const listUsers = createAsyncThunk<Array<IUserInfo>, void, {state:RootState}>("users/listUsers", async(_,{getState}) => {
+  try{
+    const {
+      users: { userInfo },
+    } = getState()
+
+    if(!userInfo){
+      throw new Error("User not logged In")
+    }
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    const { data } = await axios.get(`/api/users`, config)
+    return data
+  }catch(error:any){
+    const message = error.response && error.response.data.message
+    ? error.response.data.message
+    : error.message
+
+    return message
+  }
+})
+  export const deleteUser = createAsyncThunk<{}, string, {state:RootState}>("users/deleteUser", async(id,{getState}) => {
+    try{
+      const {
+        users: { userInfo },
+      } = getState()
+  
+      if(!userInfo){
+        throw new Error("User not logged In")
+      }
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+  
+      await axios.delete(`/api/users/${id}`, config)
+    }catch(error:any){
+      const message = error.response && error.response.data.message
+      ? error.response.data.message
+      : error.message
+  
+      return message
+    }
+})
+
+interface UserUpdateInfo  {
+  _id: string, 
+  name:string,
+  email:string, 
+  isAdmin: boolean 
+}
+export const updateUser = createAsyncThunk<UserUpdateInfo, UserUpdateInfo, {state:RootState}>("users/updateUser", async(user,{getState}) => {
+  try{
+    const {
+      users: { userInfo },
+    } = getState()
+
+    if(!userInfo){
+      throw new Error("User not logged In")
+    }
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    const { data } = await axios.put(`/api/users/${user._id}`, user, config)
+    return data
+  }catch(error:any){
+    const message = error.response && error.response.data.message
+    ? error.response.data.message
+    : error.message
+
+    return message
+  }
+})
+export const getUserDetails = createAsyncThunk<IUserInfo, string, {state:RootState}>("users/getUserDetails", async(id,{getState}) => {
+  try{
+    const {
+      users: { userInfo },
+    } = getState()
+
+    if(!userInfo){
+      throw new Error("User not logged In")
+    }
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    const { data } = await axios.get(`/api/users/${id}`, config)
+    return data
+  }catch(error:any){
+    const message = error.response && error.response.data.message
+    ? error.response.data.message
+    : error.message
+
+    return message
+  }
+})
+
 
 interface UsersState {
   status: string | null,
   error: string | null,
-  userInfo? : IUserInfo 
+  userInfo : IUserInfo | null,
+  userUpdateStatus: string | null,
+  profileUpdateStatus: string | null ,
+  registerStatus: string | null,
+  userListStatus: string | null,
+  userList?: Array<IUserInfo>,
+  userDetails:{
+    status: string | null,
+    error: any,
+    user?: IUserInfo
+  } 
 }
 const initialState:UsersState = {
     status: null, 
     error: null,
+    profileUpdateStatus: null,
+    userUpdateStatus: null,
+    userInfo: null,
+    registerStatus: null,
+    userListStatus: null,
+    userDetails:{
+      status: null,
+      error: null,
+    }
 } 
 
 const usersSlice = createSlice({
@@ -71,7 +250,52 @@ const usersSlice = createSlice({
       if (action.error.message){
         state.error = action.error.message;
       }
-    });
+    })
+    builder.addCase(updateUserProfile.pending, (state, action) => {
+      state.profileUpdateStatus = "loading"
+    })
+    builder.addCase(updateUserProfile.fulfilled, (state, action) => {
+      state.profileUpdateStatus = "succeeded"
+      state.userInfo = action.payload
+    })
+    builder.addCase(updateUserProfile.rejected, (state, action) => {
+      state.profileUpdateStatus = "failed"
+    })
+    builder.addCase(register.pending, (state, action) => {
+      state.registerStatus = "loading"
+    })
+    builder.addCase(register.fulfilled, (state, action) => {
+      state.registerStatus = "succeeded"
+      state.userInfo = action.payload
+    })
+    builder.addCase(register.rejected, (state, action) => {
+      state.registerStatus = "failed"
+    })
+    builder.addCase(listUsers.pending, (state, action) => {
+      state.userListStatus = "loading"
+    })
+    builder.addCase(listUsers.fulfilled, (state, action) => {
+      state.userListStatus = "succeeded"
+      state.userUpdateStatus = null
+      state.userList = action.payload
+    })
+    builder.addCase(listUsers.rejected, (state, action) => {
+      state.userListStatus = "failed"
+    })
+    builder.addCase(getUserDetails.pending, (state, action) => {
+      state.userDetails.status = "loading"
+    })
+    builder.addCase(getUserDetails.fulfilled, (state, action) => {
+      state.userDetails.status = "succeeded"
+      state.userDetails.user = action.payload
+    })
+    builder.addCase(getUserDetails.rejected, (state, action) => {
+      state.userDetails.status = "failed"
+      state.userDetails.error = action.payload
+    })
+    builder.addCase(updateUser.fulfilled, (state, action) => {
+      state.userUpdateStatus = "succeeded"
+    })
   },
 });
 

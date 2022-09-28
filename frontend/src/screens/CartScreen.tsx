@@ -3,25 +3,31 @@ import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, ListGroup, Image, Form, Button, Card } from 'react-bootstrap'
 import Message from '../components/Message'
-import { addToCart, removeFromCart } from '../actions/cartActions'
+import { addToCart, removeFromCart, changeQuantity } from '../features/cart/cartSlice'
+import { useAppSelector } from '../types/hooks'
 
-const CartScreen = ({ match, location, history }) => {
+interface CartScreenProps {
+  match:any,
+  history: any,
+  location: any
+}
+const CartScreen = ({ match, location, history }:CartScreenProps) => {
   const productId = match.params.id
 
   const qty = location.search ? Number(location.search.split('=')[1]) : 1
 
   const dispatch = useDispatch()
 
-  const cart = useSelector((state) => state.cart)
+  const cart = useAppSelector((state) => state.cart)
   const { cartItems } = cart
 
   useEffect(() => {
     if (productId) {
-      dispatch(addToCart(productId, qty))
+      dispatch(addToCart({id:productId, qty}))
     }
   }, [dispatch, productId, qty])
 
-  const removeFromCartHandler = (id) => {
+  const removeFromCartHandler = (id:string) => {
     dispatch(removeFromCart(id))
   }
 
@@ -40,13 +46,13 @@ const CartScreen = ({ match, location, history }) => {
         ) : (
           <ListGroup variant='flush'>
             {cartItems.map((item) => (
-              <ListGroup.Item key={item.product}>
+              <ListGroup.Item key={item._id}>
                 <Row>
                   <Col md={2}>
                     <Image src={item.image} alt={item.name} fluid rounded />
                   </Col>
                   <Col md={3}>
-                    <Link to={`/product/${item.product}`}>{item.name}</Link>
+                    <Link to={`/product/${item._id}`}>{item.name}</Link>
                   </Col>
                   <Col md={2}>${item.price}</Col>
                   <Col md={2}>
@@ -55,11 +61,11 @@ const CartScreen = ({ match, location, history }) => {
                       value={item.qty}
                       onChange={(e) =>
                         dispatch(
-                          addToCart(item.product, Number(e.target.value))
+                          addToCart({id:item._id, qty:Number(e.target.value)})
                         )
                       }
                     >
-                      {[...Array(item.countInStock).keys()].map((x) => (
+                      {Array.from(Array(item.countInStock).keys()).map((x) => (
                         <option key={x + 1} value={x + 1}>
                           {x + 1}
                         </option>
@@ -70,7 +76,7 @@ const CartScreen = ({ match, location, history }) => {
                     <Button
                       type='button'
                       variant='light'
-                      onClick={() => removeFromCartHandler(item.product)}
+                      onClick={() => removeFromCartHandler(item._id)}
                     >
                       <i className='fas fa-trash'></i>
                     </Button>

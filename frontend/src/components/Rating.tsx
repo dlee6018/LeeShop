@@ -1,6 +1,11 @@
 import React from 'react'
 
-const Rating = ({ value, text, color }) => {
+interface RatingProps  {
+  value: number,
+  text?: string ,
+  color?: string
+}
+const Rating = ({ value, text, color }:RatingProps) => {
   return (
     <div className='rating'>
       <span>

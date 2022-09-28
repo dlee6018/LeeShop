@@ -17,9 +17,9 @@ import { RootState } from "../store";
 
 
 type HomeScreenProps = {
-  match:string
+  match:any
 }
-const HomeScreen = ({ match }:{match:any}) => {
+const HomeScreen = ({ match }:HomeScreenProps) => {
   const keyword = match.params.keyword || "";
 
   const pageNumber = match.params.pageNumber || 1;
@@ -42,7 +42,7 @@ const HomeScreen = ({ match }:{match:any}) => {
   return (
     <>
       <Meta />
-      {!keyword ? (
+      {!keyword.length ? (
         <ProductCarousel />
       ) : (
         <Link to="/" className="btn btn-light">

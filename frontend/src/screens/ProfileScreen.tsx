@@ -4,52 +4,50 @@ import { LinkContainer } from 'react-router-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { getUserDetails, updateUserProfile } from '../actions/userActions'
 import { listMyOrders } from '../actions/orderActions'
-import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
+import { useAppSelector } from '../types/hooks'
+import {updateUserProfile} from '../features/users/userSlice'
 
-const ProfileScreen = ({ location, history }) => {
+interface ProfileScreenProps {
+  location: any,
+  history: any
+}
+const ProfileScreen = ({ location, history }:ProfileScreenProps) => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [message, setMessage] = useState(null)
+  const [message, setMessage] = useState('')
 
   const dispatch = useDispatch()
 
-  const userDetails = useSelector((state) => state.userDetails)
-  const { loading, error, user } = userDetails
+  // const userDetails = useAppSelector((state) => state.userDetails)
+  // const { loading, error, user } = userDetails
 
-  const userLogin = useSelector((state) => state.userLogin)
-  const { userInfo } = userLogin
+  const userInfo = useAppSelector((state) => state.users.userInfo)
 
-  const userUpdateProfile = useSelector((state) => state.userUpdateProfile)
-  const { success } = userUpdateProfile
+  // const userUpdateProfile = useAppSelector((state) => state.userUpdateProfile)
+  // const { success } = userUpdateProfile
+  const updateStatus = useAppSelector((state) => state.users.profileUpdateStatus)
 
-  const orderListMy = useSelector((state) => state.orderListMy)
+  const orderListMy = useAppSelector((state) => state.orderListMy)
   const { loading: loadingOrders, error: errorOrders, orders } = orderListMy
 
   useEffect(() => {
-    if (!userInfo) {
+    if(!userInfo){
       history.push('/login')
-    } else {
-      if (!user || !user.name || success) {
-        dispatch({ type: USER_UPDATE_PROFILE_RESET })
-        dispatch(getUserDetails('profile'))
-        dispatch(listMyOrders())
-      } else {
-        setName(user.name)
-        setEmail(user.email)
-      }
+    }else{
+      setName(userInfo.name)
+      setEmail(userInfo.email)
     }
-  }, [dispatch, history, userInfo, user, success])
+  }, [dispatch, history, userInfo])
 
-  const submitHandler = (e) => {
+  const submitHandler = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (password !== confirmPassword) {
       setMessage('Passwords do not match')
-    } else {
-      dispatch(updateUserProfile({ id: user._id, name, email, password }))
+    } else if(userInfo) {
+      dispatch(updateUserProfile({ _id: userInfo._id, name, email, password, isAdmin:userInfo.isAdmin,token:userInfo.token }))
     }
   }
 
@@ -59,12 +57,12 @@ const ProfileScreen = ({ location, history }) => {
         <h2>User Profile</h2>
         {message && <Message variant='danger'>{message}</Message>}
         {}
-        {success && <Message variant='success'>Profile Updated</Message>}
-        {loading ? (
+        {updateStatus === "succeeded" && <Message variant='success'>Profile Updated</Message>}
+        {/* {loading ? (
           <Loader />
         ) : error ? (
           <Message variant='danger'>{error}</Message>
-        ) : (
+        ) : ( */}
           <Form onSubmit={submitHandler}>
             <Form.Group controlId='name'>
               <Form.Label>Name</Form.Label>
@@ -110,7 +108,7 @@ const ProfileScreen = ({ location, history }) => {
               Update
             </Button>
           </Form>
-        )}
+        {/* )} */}
       </Col>
       <Col md={9}>
         <h2>My Orders</h2>
@@ -130,7 +128,7 @@ const ProfileScreen = ({ location, history }) => {
                 <th></th>
               </tr>
             </thead>
-            <tbody>
+            {/* <tbody>
               {orders.map((order) => (
                 <tr key={order._id}>
                   <td>{order._id}</td>
@@ -159,7 +157,7 @@ const ProfileScreen = ({ location, history }) => {
                   </td>
                 </tr>
               ))}
-            </tbody>
+            </tbody> */}
           </Table>
         )}
       </Col>

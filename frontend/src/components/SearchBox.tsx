@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { Form, Button } from 'react-bootstrap'
 
-const SearchBox = ({ history }) => {
+const SearchBox = ({ history }: {history:any}) => {
   const [keyword, setKeyword] = useState('')
 
-  const submitHandler = (e) => {
+  const submitHandler = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (keyword.trim()) {
       history.push(`/search/${keyword}`)
