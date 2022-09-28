@@ -8,6 +8,7 @@ import { useAppSelector } from '../types/hooks'
 import { getUserInfo, getUsersError, getUsersStatus, listUsers, deleteUser } from '../features/users/userSlice'
 import { RootState } from '../store'
 
+
 interface UserListScreenProps{
   history:any
 }
