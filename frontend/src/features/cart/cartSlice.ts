@@ -27,7 +27,6 @@ export const addToCart = createAsyncThunk<CartProductInfo, addToCartParams, {sta
     const {id, qty} = addToCartParams
     const {data} = await axios.get(`/api/products/${id}`)
 
-    console.log(qty, "qty")
     const payload:CartProductInfo = {
         _id: data._id,
         name: data.name,

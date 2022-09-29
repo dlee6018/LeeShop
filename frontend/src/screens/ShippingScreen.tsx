@@ -4,10 +4,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import FormContainer from '../components/FormContainer'
 import CheckoutSteps from '../components/CheckoutSteps'
 import { saveShippingAddress } from '../actions/cartActions'
+import { useAppSelector } from '../types/hooks'
 
-const ShippingScreen = ({ history }) => {
-  const cart = useSelector((state) => state.cart)
-  const { shippingAddress } = cart
+interface ShippingScreenProps {
+  history:any,
+
+}
+const ShippingScreen = ({ history }:ShippingScreenProps) => {
+  const shippingAddress = useAppSelector((state) => state.cart.shippingAddress)
 
   const [address, setAddress] = useState(shippingAddress.address)
   const [city, setCity] = useState(shippingAddress.city)

@@ -2,13 +2,13 @@ import { RouteComponentProps } from "react-router-dom";
 interface Props extends RouteComponentProps {
 
 }
-// interface orderItems{
-//     name: string,
-//     qty: number,
-//     image: string,
-//     price: number,
-//     products: Types.ObjectId
-// }
+interface OrderItems{
+    name: string,
+    qty: number,
+    image: string,
+    price: number,
+    products: string
+}
 
 export interface IShippingAddress{
     address: string,
@@ -16,12 +16,12 @@ export interface IShippingAddress{
     postalCode: string,
     country: string
 }
-// interface paymentResult{
-//     id: string,
-//     status: string,
-//     update_time: string,
-//     email_address: string
-// }
+interface IPaymentResult{
+    id: string,
+    status: string,
+    update_time: string,
+    email_address: string
+}
 interface Review {
     _id: string,
     name: string,
@@ -31,20 +31,20 @@ interface Review {
     createdAt: string,
 }
 
-// export interface IOrder extends Document{
-//     user: IUser,
-//     orderItems: Array<orderItems>,
-//     shippingAddress: shippingAddress,
-//     paymentMethod: string,
-//     paymentResult: paymentResult,
-//     taxPrice: number,
-//     shippingPrice: number,
-//     totalPrice: number,
-//     isPaid: boolean,
-//     paidAt: Date,
-//     isDelivered: boolean,
-//     deliveredAt: Date
-// }
+export interface IOrder{
+    user: IUserInfo,
+    orderItems: Array<OrderItems>,
+    shippingAddress: IShippingAddress,
+    paymentMethod: string,
+    paymentResult: IPaymentResult,
+    taxPrice: number,
+    shippingPrice: number,
+    totalPrice: number,
+    isPaid: boolean,
+    paidAt: Date,
+    isDelivered: boolean,
+    deliveredAt: Date
+}
 
 
 export interface IProduct{
