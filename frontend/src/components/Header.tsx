@@ -11,10 +11,11 @@ import {
   getUsersError,
   getUsersStatus,
 } from "../features/users/userSlice";
+import { useAppDispatch } from "../types/hooks";
 
 const Header = () => {
   const history = useHistory()
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [loggedIn, setLoggedIn] = useState(false);
   const status = useSelector(getUsersStatus);

@@ -4,9 +4,9 @@ import { LinkContainer } from 'react-router-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { listMyOrders } from '../actions/orderActions'
-import { useAppSelector } from '../types/hooks'
+import { useAppDispatch, useAppSelector } from '../types/hooks'
 import {updateUserProfile} from '../features/users/userSlice'
+import {getMyOrders} from '../features/orders/orderSlice'
 
 interface ProfileScreenProps {
   location: any,
@@ -19,21 +19,17 @@ const ProfileScreen = ({ location, history }:ProfileScreenProps) => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [message, setMessage] = useState('')
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  // const userDetails = useAppSelector((state) => state.userDetails)
-  // const { loading, error, user } = userDetails
 
   const userInfo = useAppSelector((state) => state.users.userInfo)
-
-  // const userUpdateProfile = useAppSelector((state) => state.userUpdateProfile)
-  // const { success } = userUpdateProfile
   const updateStatus = useAppSelector((state) => state.users.profileUpdateStatus)
 
-  const orderListMy = useAppSelector((state) => state.orderListMy)
-  const { loading: loadingOrders, error: errorOrders, orders } = orderListMy
+  const myOrders = useAppSelector((state) => state.orders.myOrders)
+  const {status:ordersStatus, error:ordersError, orders} = myOrders
 
   useEffect(() => {
+    dispatch(getMyOrders())
     if(!userInfo){
       history.push('/login')
     }else{
@@ -56,13 +52,7 @@ const ProfileScreen = ({ location, history }:ProfileScreenProps) => {
       <Col md={3}>
         <h2>User Profile</h2>
         {message && <Message variant='danger'>{message}</Message>}
-        {}
         {updateStatus === "succeeded" && <Message variant='success'>Profile Updated</Message>}
-        {/* {loading ? (
-          <Loader />
-        ) : error ? (
-          <Message variant='danger'>{error}</Message>
-        ) : ( */}
           <Form onSubmit={submitHandler}>
             <Form.Group controlId='name'>
               <Form.Label>Name</Form.Label>
@@ -112,10 +102,10 @@ const ProfileScreen = ({ location, history }:ProfileScreenProps) => {
       </Col>
       <Col md={9}>
         <h2>My Orders</h2>
-        {loadingOrders ? (
+        {ordersStatus === "loading" ? (
           <Loader />
-        ) : errorOrders ? (
-          <Message variant='danger'>{errorOrders}</Message>
+        ) : ordersStatus ==="failed" ? (
+          <Message variant='danger'>{ordersError}</Message>
         ) : (
           <Table striped bordered hover responsive className='table-sm'>
             <thead>
@@ -128,8 +118,8 @@ const ProfileScreen = ({ location, history }:ProfileScreenProps) => {
                 <th></th>
               </tr>
             </thead>
-            {/* <tbody>
-              {orders.map((order) => (
+            <tbody>
+              {orders && orders.map((order) => (
                 <tr key={order._id}>
                   <td>{order._id}</td>
                   <td>{order.createdAt.substring(0, 10)}</td>
@@ -157,7 +147,7 @@ const ProfileScreen = ({ location, history }:ProfileScreenProps) => {
                   </td>
                 </tr>
               ))}
-            </tbody> */}
+            </tbody>
           </Table>
         )}
       </Col>

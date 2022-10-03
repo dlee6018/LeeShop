@@ -11,12 +11,13 @@ import {
   login,
   getUserInfo,
 } from "../features/users/userSlice";
+import { useAppDispatch } from "../types/hooks";
 
 const LoginScreen = ({ location, history }: {location:any, history:any}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const userInfo = useSelector(getUserInfo);
   const status = useSelector(getUsersStatus);

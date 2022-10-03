@@ -1,17 +1,7 @@
+import { IShippingAddress } from './types/utils';
 import { combineReducers } from "redux";
 import { useDispatch } from "react-redux";
 import { configureStore} from "@reduxjs/toolkit";
-import {
-  productReviewCreateReducer,
-} from "./reducers/productReducers";
-import { cartReducer } from "./reducers/cartReducers";
-import {
-  userRegisterReducer,
-  userUpdateProfileReducer,
-  userListReducer,
-  userDeleteReducer,
-  userUpdateReducer,
-} from "./reducers/userReducers";
 import {
   orderCreateReducer,
   orderDetailsReducer,
@@ -23,16 +13,13 @@ import {
 import productsReducer from "./features/products/productSlice";
 import usersReducer from "./features/users/userSlice";
 import cartsReducer from './features/cart/cartSlice'
+import ordersReducer from './features/orders/orderSlice'
 
 const rootReducer = combineReducers({
   products: productsReducer,
   users: usersReducer,
   cart: cartsReducer,
-  orderCreate: orderCreateReducer,
-  orderDetails: orderDetailsReducer,
-  orderPay: orderPayReducer,
-  orderDeliver: orderDeliverReducer,
-  orderListMy: orderListMyReducer,
+  orders: ordersReducer,
   orderList: orderListReducer,
 
 });
@@ -46,13 +33,18 @@ const userInfoFromStorage = JSON.parse(
 );
 
 const shippingAddressFromStorage = JSON.parse(
-  localStorage.getItem("shippingAddress") || "[]"
+  localStorage.getItem("shippingAddress") || "{}"
 );
 
 const preloadedState = {
   cart: {
     cartItems: cartItemsFromStorage,
-    shippingAddress: shippingAddressFromStorage,
+    shippingAddress: shippingAddressFromStorage as IShippingAddress,
+    paymentMethod: "",
+    itemsPrice: 0,
+    shippingPrice: 0,
+    taxPrice: 0,
+    totalPrice: 0
   },
   users: { 
     status: null,

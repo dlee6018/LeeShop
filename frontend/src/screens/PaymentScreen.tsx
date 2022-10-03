@@ -3,10 +3,14 @@ import { Form, Button, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import FormContainer from '../components/FormContainer'
 import CheckoutSteps from '../components/CheckoutSteps'
-import { savePaymentMethod } from '../actions/cartActions'
+import { savePaymentMethod } from '../features/cart/cartSlice'
+import { useAppDispatch, useAppSelector } from '../types/hooks'
 
-const PaymentScreen = ({ history }) => {
-  const cart = useSelector((state) => state.cart)
+interface PaymentScreenProps{
+  history:any
+}
+const PaymentScreen = ({ history }:PaymentScreenProps) => {
+  const cart = useAppSelector((state) => state.cart)
   const { shippingAddress } = cart
 
   if (!shippingAddress.address) {
@@ -15,9 +19,9 @@ const PaymentScreen = ({ history }) => {
 
   const [paymentMethod, setPaymentMethod] = useState('PayPal')
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const submitHandler = (e) => {
+  const submitHandler = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     dispatch(savePaymentMethod(paymentMethod))
     history.push('/placeorder')
@@ -40,14 +44,14 @@ const PaymentScreen = ({ history }) => {
               checked
               onChange={(e) => setPaymentMethod(e.target.value)}
             ></Form.Check>
-            {/* <Form.Check
+            <Form.Check
               type='radio'
               label='Stripe'
               id='Stripe'
               name='paymentMethod'
               value='Stripe'
               onChange={(e) => setPaymentMethod(e.target.value)}
-            ></Form.Check> */}
+            ></Form.Check>
           </Col>
         </Form.Group>
 

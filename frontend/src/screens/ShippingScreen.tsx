@@ -4,23 +4,24 @@ import { useDispatch, useSelector } from 'react-redux'
 import FormContainer from '../components/FormContainer'
 import CheckoutSteps from '../components/CheckoutSteps'
 import { saveShippingAddress } from '../actions/cartActions'
-import { useAppSelector } from '../types/hooks'
+import { useAppDispatch, useAppSelector } from '../types/hooks'
 
 interface ShippingScreenProps {
   history:any,
 
 }
 const ShippingScreen = ({ history }:ShippingScreenProps) => {
-  const shippingAddress = useAppSelector((state) => state.cart.shippingAddress)
+  const cart = useAppSelector((state) => state.cart)
+  const { shippingAddress } = cart
 
   const [address, setAddress] = useState(shippingAddress.address)
   const [city, setCity] = useState(shippingAddress.city)
   const [postalCode, setPostalCode] = useState(shippingAddress.postalCode)
   const [country, setCountry] = useState(shippingAddress.country)
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const submitHandler = (e) => {
+  const submitHandler = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     dispatch(saveShippingAddress({ address, city, postalCode, country }))
     history.push('/payment')

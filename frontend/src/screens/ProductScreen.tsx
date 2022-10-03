@@ -21,7 +21,7 @@ import {
   selectProductDetails,
 } from "../features/products/productSlice";
 import { getUserInfo } from "../features/users/userSlice";
-import { useAppSelector } from "../types/hooks";
+import { useAppDispatch, useAppSelector } from "../types/hooks";
 import { createProductReview } from "../features/products/productSlice";
 
 const ProductScreen = ({ history, match }: {history: any, match:any}) => {
@@ -30,7 +30,7 @@ const ProductScreen = ({ history, match }: {history: any, match:any}) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const product = useAppSelector(selectProductDetails);
   const status = useAppSelector(getProductsStatus);

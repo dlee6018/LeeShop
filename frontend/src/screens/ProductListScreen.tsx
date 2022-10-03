@@ -14,7 +14,7 @@ import {
   createProduct,
 } from "../features/products/productSlice";
 import { getUserInfo } from "../features/users/userSlice";
-import {useAppSelector} from '../types/hooks'
+import {useAppDispatch, useAppSelector} from '../types/hooks'
 
 interface ProductListScreenProps {
   history:any,
@@ -23,7 +23,7 @@ interface ProductListScreenProps {
 const ProductListScreen = ({ history, match }:ProductListScreenProps) => {
   const pageNumber = match.params.pageNumber || 1;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const products = useSelector(selectAllProducts);
   const page = useAppSelector((state) => state.products.page);

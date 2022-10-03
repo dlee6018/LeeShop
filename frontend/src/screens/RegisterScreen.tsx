@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { useAppSelector } from '../types/hooks'
+import { useAppDispatch, useAppSelector } from '../types/hooks'
 import { getUserInfo, getUsersError,register } from '../features/users/userSlice'
 
 interface RegisterScreenProps{
@@ -19,7 +19,7 @@ const RegisterScreen = ({ location, history }:RegisterScreenProps) => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [message, setMessage] = useState("")
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   // const userRegister = useSelector((state) => state.userRegister)
   // const { loading, error, userInfo } = userRegister

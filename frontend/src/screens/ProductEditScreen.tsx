@@ -13,6 +13,7 @@ import {
   getProductsStatus,
 } from "../features/products/productSlice";
 import { RootState } from "../store";
+import { useAppDispatch } from "../types/hooks";
 
 const ProductEditScreen = ({ match, history }: {match: any, history: any}) => {
   const productId = match.params.id;
@@ -27,7 +28,7 @@ const ProductEditScreen = ({ match, history }: {match: any, history: any}) => {
   const [uploading, setUploading] = useState(false);
 
   const updatedStatus = useSelector((state:RootState) => state.products.updatedStatus);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const product = useSelector(selectProductDetails);
   const status = useSelector(getProductsStatus);

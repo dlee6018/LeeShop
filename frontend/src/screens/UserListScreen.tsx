@@ -4,7 +4,7 @@ import { Table, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { useAppSelector } from '../types/hooks'
+import { useAppDispatch, useAppSelector } from '../types/hooks'
 import { getUserInfo, getUsersError, getUsersStatus, listUsers, deleteUser } from '../features/users/userSlice'
 import { RootState } from '../store'
 
@@ -13,7 +13,7 @@ interface UserListScreenProps{
   history:any
 }
 const UserListScreen = ({ history }:UserListScreenProps) => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const users = useAppSelector((state) => state.users.userList)
   const status = useAppSelector((state) => state.users.userListStatus)
@@ -21,10 +21,7 @@ const UserListScreen = ({ history }:UserListScreenProps) => {
 
   const userInfo = useAppSelector(getUserInfo)
 
-  // const userDelete = useSelector((state:RootState) => state.userDelete)
   const [successDelete, setSuccessDelete] = useState(false)
-
-  // const { success: successDelete } = userDelete
 
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {

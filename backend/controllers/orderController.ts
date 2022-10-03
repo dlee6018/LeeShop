@@ -50,7 +50,7 @@ const addOrderItems:RequestHandler = asyncHandler(async (req:Request, res: Respo
 // @route   GET /api/orders/:id
 // @access  Private
 
-const checkIfOrderExists = (order) => {
+const checkIfOrderExists = (order:any) => {
   if(!order){
     throw new Error('Order not found')
   }

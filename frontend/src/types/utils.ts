@@ -7,14 +7,14 @@ interface OrderItems{
     qty: number,
     image: string,
     price: number,
-    products: string
+    _id: string
 }
 
 export interface IShippingAddress{
-    address: string,
-    city: string,
-    postalCode: string,
-    country: string
+    address: string ,
+    city: string ,
+    postalCode: string ,
+    country: string 
 }
 interface IPaymentResult{
     id: string,
@@ -41,11 +41,23 @@ export interface IOrder{
     shippingPrice: number,
     totalPrice: number,
     isPaid: boolean,
-    paidAt: Date,
+    paidAt: string,
     isDelivered: boolean,
-    deliveredAt: Date
+    deliveredAt: string,
+    itemsPrice:number,
+    createdAt: string,
+    _id: string,
 }
 
+export interface ICreateOrder{
+    orderItems: Array<OrderItems>,
+    shippingAddress: IShippingAddress,
+    paymentMethod: string,
+    itemsPrice: number,
+    shippingPrice: number,
+    taxPrice: number,
+    totalPrice: number
+}
 
 export interface IProduct{
     _id: string,

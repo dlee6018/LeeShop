@@ -14,6 +14,7 @@ import {
   getAllProducts,
 } from "../features/products/productSlice";
 import { RootState } from "../store";
+import { useAppDispatch } from "../types/hooks";
 
 
 type HomeScreenProps = {
@@ -24,7 +25,7 @@ const HomeScreen = ({ match }:HomeScreenProps) => {
 
   const pageNumber = match.params.pageNumber || 1;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const products = useSelector((state:RootState) => state.products.productList);
   const status = useSelector(getProductsStatus);

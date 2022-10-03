@@ -7,7 +7,6 @@ import {
     createEntityAdapter,
   } from "@reduxjs/toolkit";
 import axios from "axios";
-import { savePaymentMethod } from '../../actions/cartActions';
 
 interface addToCartParams {
     id: string,
@@ -41,11 +40,27 @@ export const addToCart = createAsyncThunk<CartProductInfo, addToCartParams, {sta
 
 interface InitialState {
     cartItems: Array<CartProductInfo>,
-    shippingAddress: IShippingAddress | {}
+    shippingAddress: IShippingAddress,
+    paymentMethod: string,
+    itemsPrice: number,
+    shippingPrice: number,
+    taxPrice: number,
+    totalPrice: number
 }
 const initialState:InitialState = {
     cartItems: [],
-    shippingAddress: {},
+    shippingAddress:{
+        address: "",
+        city: "",
+        postalCode: "",
+        country:""
+    },
+    paymentMethod: "",
+    itemsPrice: 0,
+    shippingPrice: 0,
+    taxPrice: 0,
+    totalPrice: 0
+    
 }
 const cartSlice = createSlice({
     name : "cart",
@@ -68,7 +83,17 @@ const cartSlice = createSlice({
         },
         savePaymentMethod(state, action) {
             const paymentInformation = action.payload
-            // state.paymentMethod = paymentInformation
+            state.paymentMethod = paymentInformation
+        },
+        calculateTotal(state, action){
+            state.itemsPrice = state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
+            state.itemsPrice = Number(state.itemsPrice.toFixed(2))
+            state.shippingPrice = state.itemsPrice > 100? 0: 10
+            state.taxPrice = (0.15 * state.itemsPrice)
+            state.taxPrice = Number(state.taxPrice.toFixed(2))
+            state.totalPrice = state.itemsPrice + state.shippingPrice + state.taxPrice
+            state.totalPrice = Number(state.totalPrice.toFixed(2))
+
         },
     },
     extraReducers: (builder) => {
@@ -85,5 +110,5 @@ const cartSlice = createSlice({
     }
 })
 
-export const {removeFromCart, changeQuantity} = cartSlice.actions
+export const {removeFromCart, changeQuantity,saveShippingAddress, savePaymentMethod, calculateTotal} = cartSlice.actions
 export default cartSlice.reducer;

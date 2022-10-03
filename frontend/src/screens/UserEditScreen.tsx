@@ -7,7 +7,7 @@ import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
 import { getUserDetails, updateUser } from '../features/users/userSlice'
 import { USER_UPDATE_RESET } from '../constants/userConstants'
-import { useAppSelector } from '../types/hooks'
+import { useAppDispatch, useAppSelector } from '../types/hooks'
 
 interface UserEditScreenProps{
   match:any,
@@ -20,7 +20,7 @@ const UserEditScreen = ({ match, history }: UserEditScreenProps) => {
   const [email, setEmail] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const userDetails = useAppSelector((state) => state.users.userDetails)
   const { status, error, user } = userDetails
