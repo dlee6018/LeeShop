@@ -38,7 +38,7 @@ const ProductEditScreen = ({ match, history }: {match: any, history: any}) => {
     if (updatedStatus === "succeeded") {
       history.push("/admin/productlist");
     } else {
-      if (!product) {
+      if (!product || !product.name || product._id !== productId) {
         dispatch(getProductDetails(productId));
       } else {
         setName(product.name);

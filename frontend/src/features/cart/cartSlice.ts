@@ -80,10 +80,12 @@ const cartSlice = createSlice({
         saveShippingAddress(state, action){
             const shippingInformation = action.payload
             state.shippingAddress = shippingInformation
+            localStorage.setItem('shippingAddress', JSON.stringify(shippingInformation))
         },
         savePaymentMethod(state, action) {
             const paymentInformation = action.payload
             state.paymentMethod = paymentInformation
+            localStorage.setItem('paymentMethod', JSON.stringify(paymentInformation))
         },
         calculateTotal(state, action){
             state.itemsPrice = state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
@@ -99,7 +101,6 @@ const cartSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(addToCart.fulfilled, (state, action) => {
             const item = action.payload
-            console.log(item)
             const existItem = state.cartItems.find((product) => product._id === item._id)
             if (existItem){
                 state.cartItems = state.cartItems.map((product) => product._id === existItem._id ? item : product)

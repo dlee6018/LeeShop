@@ -163,6 +163,7 @@ export const getMyOrders = createAsyncThunk<Array<IOrder>, void, {state:RootStat
           },
         }
         const { data } = await axios.get(`/api/orders/myorders`, config)
+        console.log(data, "data")
       return data
   }catch(error:any){
       const message =
@@ -221,11 +222,13 @@ interface InitialState {
     },
     orderPay:{
         status: string,
-        error: any
+        error: any,
+        paySuccess?: boolean
     },
     orderDeliver:{
         status: string,
-        error: any
+        error: any,
+        deliverSuccess?: boolean
     },
     myOrders:{
       status: string,
@@ -249,7 +252,7 @@ const initialState:InitialState = {
     },
     orderPay:{
         status: "",
-        error: null
+        error: null,
     },
     orderDeliver:{
         status: "",
@@ -285,6 +288,8 @@ const ordersSlice = createSlice({
         })
         .addCase(getOrderDetails.pending, (state, action) => {
             state.orderDetails.status = "loading"
+            state.orderPay.paySuccess = false
+            state.orderDeliver.deliverSuccess = false
         })
         .addCase(getOrderDetails.fulfilled, (state, action) => {
             state.orderDetails.status = "succeeded"
@@ -299,6 +304,7 @@ const ordersSlice = createSlice({
         })
         .addCase(payOrder.fulfilled, (state, action) => {
             state.orderPay.status = "succeeded"
+            state.orderPay.paySuccess = true
         })
         .addCase(payOrder.rejected, (state, action) => {
             state.orderPay.status = "failed"
@@ -309,6 +315,7 @@ const ordersSlice = createSlice({
         })
         .addCase(deliverOrder.fulfilled, (state, action) => {
             state.orderDeliver.status = "succeeded"
+            state.orderDeliver.deliverSuccess = true
         })
         .addCase(deliverOrder.rejected, (state, action) => {
             state.orderDeliver.status = "failed"

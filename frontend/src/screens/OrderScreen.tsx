@@ -25,37 +25,33 @@ const OrderScreen = ({ match, history }:OrderScreenProps) => {
 
 
   const orderPay = useAppSelector((state) => state.orders.orderPay)
-  const {status: payStatus } = orderPay
+  const {status: payStatus , paySuccess} = orderPay
 
   const orderDeliver = useAppSelector((state) => state.orders.orderDeliver)
-  const {status: deliverStatus } = orderDeliver
+  const {status: deliverStatus ,deliverSuccess} = orderDeliver
 
   const userInfo = useAppSelector(getUserInfo)
 
   const [payFinished, setPayFinished] = useState(false)
   const [deliverFinished, setDeliverFinished] = useState(false)
 
+  const addPayPalScript = async () => {
+    const { data: clientId } = await axios.get('/api/config/paypal')
+    const script = document.createElement('script')
+    script.type = 'text/javascript'
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`
+    script.async = true
+    script.onload = () => {
+      setSdkReady(true)
+    }
+    document.body.appendChild(script)
+  }
   useEffect(() => {
     if (!userInfo) {
       history.push('/login')
     }
-
-    const addPayPalScript = async () => {
-      const { data: clientId } = await axios.get('/api/config/paypal')
-      const script = document.createElement('script')
-      script.type = 'text/javascript'
-      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`
-      script.async = true
-      script.onload = () => {
-        setSdkReady(true)
-      }
-      document.body.appendChild(script)
-    }
-
-    if (!order || payFinished===true|| deliverFinished===true || order._id !== orderId) {
+    if (!order || !order._id|| paySuccess || deliverSuccess|| order._id !== orderId) {
       dispatch(getOrderDetails(orderId))
-      setPayFinished(false)
-      setDeliverFinished(false)
     } else if (!order.isPaid) {
       if (!window.paypal) {
         addPayPalScript()
@@ -63,17 +59,16 @@ const OrderScreen = ({ match, history }:OrderScreenProps) => {
         setSdkReady(true)
       }
     }
-  }, [dispatch, orderId, order, payFinished, deliverFinished])
+  }, [dispatch, orderId, order,paySuccess, deliverSuccess ])
 
   const successPaymentHandler = (paymentResult:any) => {
     dispatch(payOrder({orderId, paymentResult}))
-    setPayFinished(true)
   }
 
   const deliverHandler = () => {
     dispatch(deliverOrder(orderId))
-    setDeliverFinished(true)
   }
+
 
   return status ==="loading" ? (
     <Loader />

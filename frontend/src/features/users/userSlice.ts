@@ -273,10 +273,10 @@ const usersSlice = createSlice({
     })
     builder.addCase(listUsers.pending, (state, action) => {
       state.userListStatus = "loading"
+      state.userUpdateStatus = null
     })
     builder.addCase(listUsers.fulfilled, (state, action) => {
       state.userListStatus = "succeeded"
-      state.userUpdateStatus = null
       state.userList = action.payload
     })
     builder.addCase(listUsers.rejected, (state, action) => {
