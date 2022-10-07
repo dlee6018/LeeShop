@@ -5,14 +5,12 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "./Loader";
 import Message from "./Message";
 import { useAppDispatch, useAppSelector } from "../types/hooks";
-import { getProductsError, getTopProducts } from "../features/products/productSlice";
+import { getTopProducts } from "../features/products/productSlice";
 
 const ProductCarousel = () => {
   const dispatch = useAppDispatch();
 
-  const products = useAppSelector((state) => state.products.topProducts)
-  const status=  useAppSelector((state) => state.products.topProductsStatus)
-  const error = useAppSelector(getProductsError)
+  const {status, error, products} = useAppSelector((state) => state.products.topProducts)
 
   useEffect(() => {
     dispatch(getTopProducts());

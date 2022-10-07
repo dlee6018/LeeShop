@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { getUserDetails, updateUser } from '../features/users/userSlice'
-import { USER_UPDATE_RESET } from '../constants/userConstants'
+import { getUserDetails, resetUserUpdate, updateUser } from '../features/users/userSlice'
 import { useAppDispatch, useAppSelector } from '../types/hooks'
 
 interface UserEditScreenProps{
@@ -20,6 +18,8 @@ const UserEditScreen = ({ match, history }: UserEditScreenProps) => {
   const [email, setEmail] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
 
+  const [updateFinished, setUpdateFinished] = useState(false)
+
   const dispatch = useAppDispatch()
 
   const userDetails = useAppSelector((state) => state.users.userDetails)
@@ -27,19 +27,22 @@ const UserEditScreen = ({ match, history }: UserEditScreenProps) => {
 
   const updateStatus = useAppSelector((state) => state.users.userUpdateStatus)
 
+  const userUpdateSuccess = useAppSelector((state) => state.users.userUpdateSuccess)
+
   useEffect(() => {
-    if (updateStatus === "succeeded") {
+    if (userUpdateSuccess) {
+      dispatch(resetUserUpdate())
       history.push('/admin/userlist')
-    } else {
-      if (!user || !user.name || user._id !== userId) {
+    }else{
+      if(!user || !user.name || !user._id == userId){
         dispatch(getUserDetails(userId))
-      } else {
+      }else{
         setName(user.name)
         setEmail(user.email)
         setIsAdmin(user.isAdmin)
       }
     }
-  }, [dispatch, history, userId, updateStatus])
+  }, [dispatch, history, userId, updateFinished, user, userUpdateSuccess])
 
   const submitHandler = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

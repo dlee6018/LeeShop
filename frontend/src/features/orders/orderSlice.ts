@@ -223,12 +223,12 @@ interface InitialState {
     orderPay:{
         status: string,
         error: any,
-        paySuccess?: boolean
+        success: boolean
     },
     orderDeliver:{
         status: string,
         error: any,
-        deliverSuccess?: boolean
+        success: boolean
     },
     myOrders:{
       status: string,
@@ -253,10 +253,12 @@ const initialState:InitialState = {
     orderPay:{
         status: "",
         error: null,
+        success: false
     },
     orderDeliver:{
         status: "",
-        error: null
+        error: null,
+        success: false
     },
     myOrders:{
       status:"",
@@ -273,6 +275,10 @@ const ordersSlice = createSlice({
     name: "orders",
     initialState,
     reducers: {
+      resetPayDeliver(state){
+        state.orderPay.success = false
+        state.orderDeliver.success = false
+      }
     },
     extraReducers(builder){
         builder.addCase(createOrder.pending, (state, action) => {
@@ -288,8 +294,6 @@ const ordersSlice = createSlice({
         })
         .addCase(getOrderDetails.pending, (state, action) => {
             state.orderDetails.status = "loading"
-            state.orderPay.paySuccess = false
-            state.orderDeliver.deliverSuccess = false
         })
         .addCase(getOrderDetails.fulfilled, (state, action) => {
             state.orderDetails.status = "succeeded"
@@ -304,7 +308,7 @@ const ordersSlice = createSlice({
         })
         .addCase(payOrder.fulfilled, (state, action) => {
             state.orderPay.status = "succeeded"
-            state.orderPay.paySuccess = true
+            state.orderPay.success = true
         })
         .addCase(payOrder.rejected, (state, action) => {
             state.orderPay.status = "failed"
@@ -315,7 +319,7 @@ const ordersSlice = createSlice({
         })
         .addCase(deliverOrder.fulfilled, (state, action) => {
             state.orderDeliver.status = "succeeded"
-            state.orderDeliver.deliverSuccess = true
+            state.orderDeliver.success = true
         })
         .addCase(deliverOrder.rejected, (state, action) => {
             state.orderDeliver.status = "failed"
@@ -327,7 +331,6 @@ const ordersSlice = createSlice({
         .addCase(getMyOrders.fulfilled, (state,action)=> {
           state.myOrders.status = "succeeded"
           state.myOrders.orders = action.payload
-          
         })
         .addCase(getMyOrders.rejected, (state,action)=> {
           state.myOrders.status = "failed"
@@ -346,4 +349,5 @@ const ordersSlice = createSlice({
     },
 })
 
+export const {resetPayDeliver} = ordersSlice.actions;
 export default ordersSlice.reducer;

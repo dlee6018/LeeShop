@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "react-bootstrap";
 import Product from "../components/Product";
 import Message from "../components/Message";
@@ -9,15 +8,11 @@ import Paginate from "../components/Paginate";
 import ProductCarousel from "../components/ProductCarousel";
 import Meta from "../components/Meta";
 import {
-  getProductsStatus,
-  getProductsError,
   getAllProducts,
 } from "../features/products/productSlice";
-import { RootState } from "../store";
-import { useAppDispatch } from "../types/hooks";
+import { useAppDispatch, useAppSelector } from "../types/hooks";
 
-
-type HomeScreenProps = {
+interface HomeScreenProps {
   match:any
 }
 const HomeScreen = ({ match }:HomeScreenProps) => {
@@ -27,16 +22,9 @@ const HomeScreen = ({ match }:HomeScreenProps) => {
 
   const dispatch = useAppDispatch();
 
-  const products = useSelector((state:RootState) => state.products.productList);
-  const status = useSelector(getProductsStatus);
-  const error = useSelector(getProductsError);
-  const page = useSelector((state:RootState) => state.products.page);
-  const pages = useSelector((state:RootState) => state.products.pages);
+  const productList = useAppSelector((state) => state.products.productList)
+  const {status, error, page, pages, products} = productList
 
-  const searchInfo = {
-    keyword,
-    pageNumber,
-  };
   useEffect(() => {
     dispatch(getAllProducts({ keyword, pageNumber }));
   }, [dispatch, keyword, pageNumber]);

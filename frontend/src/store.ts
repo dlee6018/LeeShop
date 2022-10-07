@@ -2,14 +2,6 @@ import { IShippingAddress } from './types/utils';
 import { combineReducers } from "redux";
 import { useDispatch } from "react-redux";
 import { configureStore} from "@reduxjs/toolkit";
-import {
-  orderCreateReducer,
-  orderDetailsReducer,
-  orderPayReducer,
-  orderDeliverReducer,
-  orderListMyReducer,
-  orderListReducer,
-} from "./reducers/orderReducers";
 import productsReducer from "./features/products/productSlice";
 import usersReducer from "./features/users/userSlice";
 import cartsReducer from './features/cart/cartSlice'
@@ -20,8 +12,6 @@ const rootReducer = combineReducers({
   users: usersReducer,
   cart: cartsReducer,
   orders: ordersReducer,
-  orderList: orderListReducer,
-
 });
 
 const cartItemsFromStorage = JSON.parse(
@@ -57,6 +47,7 @@ const preloadedState = {
       status: null,
       error: null,
     },
+    userUpdateSuccess: false,
     userInfo: userInfoFromStorage },
 };
 

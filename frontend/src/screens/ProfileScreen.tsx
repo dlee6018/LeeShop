@@ -40,8 +40,8 @@ const ProfileScreen = ({ location, history }:ProfileScreenProps) => {
 
   const submitHandler = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (password !== confirmPassword) {
-      setMessage('Passwords do not match')
+    if (password !== confirmPassword || password.length === 0) {
+      setMessage('Passwords do not match or password was not provided')
     } else if(userInfo) {
       dispatch(updateUserProfile({ _id: userInfo._id, name, email, password, isAdmin:userInfo.isAdmin,token:userInfo.token }))
     }
@@ -49,6 +49,7 @@ const ProfileScreen = ({ location, history }:ProfileScreenProps) => {
 
   return (
     <Row>
+      <h2>Please provide your original password if you do not want to change your password</h2>
       <Col md={3}>
         <h2>User Profile</h2>
         {message && <Message variant='danger'>{message}</Message>}

@@ -2,18 +2,14 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 import FormContainer from "../components/FormContainer";
-import { selectProductDetails, updateProduct } from "../features/products/productSlice";
+import { reset, updateProduct } from "../features/products/productSlice";
 import {
   getProductDetails,
-  getProductsError,
-  getProductsStatus,
 } from "../features/products/productSlice";
-import { RootState } from "../store";
-import { useAppDispatch } from "../types/hooks";
+import { useAppDispatch, useAppSelector } from "../types/hooks";
 
 const ProductEditScreen = ({ match, history }: {match: any, history: any}) => {
   const productId = match.params.id;
@@ -27,15 +23,19 @@ const ProductEditScreen = ({ match, history }: {match: any, history: any}) => {
   const [description, setDescription] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  const updatedStatus = useSelector((state:RootState) => state.products.updatedStatus);
-  const dispatch = useAppDispatch();
+  const productDetails = useAppSelector((state) => state.products.productDetails)
+  const {status, error, product} = productDetails
 
-  const product = useSelector(selectProductDetails);
-  const status = useSelector(getProductsStatus);
-  const error = useSelector(getProductsError);
+  const productUpdate = useAppSelector((state) => state.products.productUpdate);
+  const {status: updatedStatus, error: updateError} = productUpdate
+
+
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (updatedStatus === "succeeded") {
+      dispatch(reset())
       history.push("/admin/productlist");
     } else {
       if (!product || !product.name || product._id !== productId) {

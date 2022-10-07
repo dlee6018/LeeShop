@@ -8,7 +8,6 @@ import {IOrder} from '../utils/interface'
 // @route   POST /api/orders
 // @access  Private
 
-
 const addOrderItems:RequestHandler = asyncHandler(async (req:Request, res: Response) => {
   const {
     orderItems,
@@ -27,9 +26,6 @@ const addOrderItems:RequestHandler = asyncHandler(async (req:Request, res: Respo
     throw new Error('No order items')
     return
   } else {
-
-    //req.user comes from middleware
-    
     const order = new Order({
       orderItems,
       user: req.user._id,

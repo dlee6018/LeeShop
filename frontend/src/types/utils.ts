@@ -1,7 +1,3 @@
-import { RouteComponentProps } from "react-router-dom";
-interface Props extends RouteComponentProps {
-
-}
 interface OrderItems{
     name: string,
     qty: number,
@@ -71,10 +67,6 @@ export interface IProduct{
     numReviews?: number,
     price: number,
     countInStock: number,
-}
-
-export interface IProductDetails{
-
 }
 
 export interface IUserInfo {

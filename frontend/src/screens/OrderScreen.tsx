@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { getOrderDetails, payOrder, deliverOrder } from '../features/orders/orderSlice'
+import { getOrderDetails, payOrder, deliverOrder, resetPayDeliver } from '../features/orders/orderSlice'
 import { useAppSelector, useAppDispatch } from '../types/hooks'
 import { getUserInfo } from '../features/users/userSlice'
 
@@ -25,32 +25,31 @@ const OrderScreen = ({ match, history }:OrderScreenProps) => {
 
 
   const orderPay = useAppSelector((state) => state.orders.orderPay)
-  const {status: payStatus , paySuccess} = orderPay
+  const {status: payStatus , success:paySuccess} = orderPay
 
   const orderDeliver = useAppSelector((state) => state.orders.orderDeliver)
-  const {status: deliverStatus ,deliverSuccess} = orderDeliver
+  const {status: deliverStatus ,success:deliverSuccess} = orderDeliver
 
   const userInfo = useAppSelector(getUserInfo)
 
-  const [payFinished, setPayFinished] = useState(false)
-  const [deliverFinished, setDeliverFinished] = useState(false)
-
-  const addPayPalScript = async () => {
-    const { data: clientId } = await axios.get('/api/config/paypal')
-    const script = document.createElement('script')
-    script.type = 'text/javascript'
-    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`
-    script.async = true
-    script.onload = () => {
-      setSdkReady(true)
-    }
-    document.body.appendChild(script)
-  }
   useEffect(() => {
     if (!userInfo) {
       history.push('/login')
     }
+    const addPayPalScript = async () => {
+      const { data: clientId } = await axios.get('/api/config/paypal')
+      const script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`
+      script.async = true
+      script.onload = () => {
+        setSdkReady(true)
+      }
+      document.body.appendChild(script)
+    }
+
     if (!order || !order._id|| paySuccess || deliverSuccess|| order._id !== orderId) {
+      dispatch(resetPayDeliver())
       dispatch(getOrderDetails(orderId))
     } else if (!order.isPaid) {
       if (!window.paypal) {
@@ -59,7 +58,7 @@ const OrderScreen = ({ match, history }:OrderScreenProps) => {
         setSdkReady(true)
       }
     }
-  }, [dispatch, orderId, order,paySuccess, deliverSuccess ])
+  }, [dispatch, orderId,paySuccess, deliverSuccess, order])
 
   const successPaymentHandler = (paymentResult:any) => {
     dispatch(payOrder({orderId, paymentResult}))

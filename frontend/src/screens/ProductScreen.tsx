@@ -15,8 +15,6 @@ import Message from "../components/Message";
 import Loader from "../components/Loader";
 import Meta from "../components/Meta";
 import {
-  getProductsStatus,
-  getProductsError,
   getProductDetails,
   selectProductDetails,
 } from "../features/products/productSlice";
@@ -24,7 +22,12 @@ import { getUserInfo } from "../features/users/userSlice";
 import { useAppDispatch, useAppSelector } from "../types/hooks";
 import { createProductReview } from "../features/products/productSlice";
 
-const ProductScreen = ({ history, match }: {history: any, match:any}) => {
+interface ProductScreenProps {
+  history: any,
+  match: any
+}
+
+const ProductScreen = ({ history, match }: ProductScreenProps) => {
   const productId = match.params.id;
   const [qty, setQty] = useState<string | number>(1);
   const [rating, setRating] = useState(0);
@@ -32,9 +35,8 @@ const ProductScreen = ({ history, match }: {history: any, match:any}) => {
 
   const dispatch = useAppDispatch();
 
-  const product = useAppSelector(selectProductDetails);
-  const status = useAppSelector(getProductsStatus);
-  const error = useAppSelector(getProductsError);
+  const productDetails = useAppSelector((state) => state.products.productDetails)
+  const {status, error, product} = productDetails
 
   const userInfo = useAppSelector(getUserInfo);
 

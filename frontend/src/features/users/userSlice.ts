@@ -201,6 +201,7 @@ interface UsersState {
   error: string | null,
   userInfo : IUserInfo | null,
   userUpdateStatus: string | null,
+  userUpdateSuccess: boolean,
   profileUpdateStatus: string | null ,
   registerStatus: string | null,
   userListStatus: string | null,
@@ -218,6 +219,7 @@ const initialState:UsersState = {
     userUpdateStatus: null,
     userInfo: null,
     registerStatus: null,
+    userUpdateSuccess: false,
     userListStatus: null,
     userDetails:{
       status: null,
@@ -236,6 +238,11 @@ const usersSlice = createSlice({
       localStorage.removeItem("paymentMethod");
       return initialState
     },
+    resetUserUpdate(state){
+      state.userUpdateStatus = null
+      state.userDetails.user = undefined
+      state.userUpdateSuccess = false
+    }
   },
   extraReducers(builder) {
     builder.addCase(login.pending, (state, action) => {
@@ -295,12 +302,13 @@ const usersSlice = createSlice({
     })
     builder.addCase(updateUser.fulfilled, (state, action) => {
       state.userUpdateStatus = "succeeded"
+      state.userUpdateSuccess = true
     })
   },
 });
 
 
-export const { logout } = usersSlice.actions;
+export const { logout, resetUserUpdate } = usersSlice.actions;
 export const getUserInfo = (state:RootState) => state.users.userInfo;
 export const getUsersStatus = (state:RootState) => state.users.status;
 export const getUsersError = (state:RootState) => state.users.error;
