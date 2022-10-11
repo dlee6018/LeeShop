@@ -15,7 +15,7 @@
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend",
     "clean": "rimraf dist",
     "compile": "cross-env-shell babel src -d dist --source-maps --extensions '.ts'",
-    "build": "npm run clean && npm run compile",
+    "build": "tsc",
     "typecheck": "tsc --p .",
     "build-typecheck": "npm run typecheck && npm run build"
   },
