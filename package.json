@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npm run build-typecheck && node ./backend/server.js",
     "server": "nodemon backend/server.ts",
+    "postinstall": "tsc",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "client": "npm start --prefix frontend",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
