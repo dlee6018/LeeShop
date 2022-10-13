@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders a Product Component 1`] = `
+<Fragment>
+  <Card
+    body={false}
+    className="my-3 p-3 rounded"
+  >
+    <Link
+      to="/product/1234"
+    >
+      <CardImg
+        src="/images/airpods.jpg"
+        variant="top"
+      />
+    </Link>
+    <CardBody>
+      <Link
+        to="/product/1234"
+      >
+        <CardTitle
+          as="div"
+        >
+          <strong>
+            Airpods Wireless Bluetooth Headphones
+          </strong>
+        </CardTitle>
+      </Link>
+      <CardText
+        as="div"
+      >
+        <Rating
+          color="#f8e825"
+          text="0 reviews"
+          value={0}
+        />
+      </CardText>
+      <CardText
+        as="h3"
+      >
+        $
+        89.99
+      </CardText>
+    </CardBody>
+  </Card>
+</Fragment>
+`;

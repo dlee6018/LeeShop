@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render a footer component 1`] = `
+<footer>
+  <Container
+    fluid={false}
+  >
+    <Row
+      noGutters={false}
+    >
+      <Col
+        className="text-center py-3"
+      >
+        Copyright © LeeShop
+      </Col>
+    </Row>
+  </Container>
+</footer>
+`;

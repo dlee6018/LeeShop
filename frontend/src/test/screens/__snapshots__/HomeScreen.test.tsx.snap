@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`fetches & receives a user after clicking the fetch user button 1`] = `
+<HomeScreen
+  match={
+    Object {
+      "params": Object {
+        "keyword": "",
+      },
+    }
+  }
+/>
+`;

@@ -1,0 +1,62 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders CheckoutSteps component 1`] = `
+<Nav
+  className="justify-content-center mb-4"
+  fill={false}
+  justify={false}
+>
+  <NavItem>
+    <NavLink
+      as={
+        Object {
+          "$$typeof": Symbol(react.forward_ref),
+          "render": [Function],
+        }
+      }
+      disabled={true}
+    >
+      Sign In
+    </NavLink>
+  </NavItem>
+  <NavItem>
+    <NavLink
+      as={
+        Object {
+          "$$typeof": Symbol(react.forward_ref),
+          "render": [Function],
+        }
+      }
+      disabled={true}
+    >
+      Shipping
+    </NavLink>
+  </NavItem>
+  <NavItem>
+    <NavLink
+      as={
+        Object {
+          "$$typeof": Symbol(react.forward_ref),
+          "render": [Function],
+        }
+      }
+      disabled={true}
+    >
+      Payment
+    </NavLink>
+  </NavItem>
+  <NavItem>
+    <NavLink
+      as={
+        Object {
+          "$$typeof": Symbol(react.forward_ref),
+          "render": [Function],
+        }
+      }
+      disabled={true}
+    >
+      Place Order
+    </NavLink>
+  </NavItem>
+</Nav>
+`;

@@ -6,7 +6,7 @@
      "target": "es6",
      "module": "commonjs",
      "moduleResolution": "node",
-     "outDir": "dist",
+     "outDir": "backend",
      "resolveJsonModule": true,
      "emitDecoratorMetadata": true,
      "esModuleInterop": true,

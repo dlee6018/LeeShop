@@ -62,9 +62,9 @@ export interface IProduct{
     brand: string,
     category: string,
     description: string,
-    reviews?: Array<Review> ,
-    rating?: number,
-    numReviews?: number,
+    reviews: Array<Review> ,
+    rating: number,
+    numReviews: number,
     price: number,
     countInStock: number,
 }

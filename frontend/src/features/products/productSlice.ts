@@ -68,7 +68,17 @@ export const deleteProduct = createAsyncThunk<IProduct, string, {state: RootStat
   }
 );
 
-export const updateProduct = createAsyncThunk<IProduct, IProduct, {state: RootState}>(
+interface UpdateInfo {
+  _id: string,
+  name: string,
+  image: string,
+  brand: string,
+  category: string,
+  description: string,
+  price: number,
+  countInStock: number
+}
+export const updateProduct = createAsyncThunk<IProduct, UpdateInfo, {state: RootState}>(
   "products/updateProduct",
   async (product, { getState }) => {
     try {

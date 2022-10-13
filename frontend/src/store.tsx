@@ -1,5 +1,5 @@
 import { IShippingAddress } from './types/utils';
-import { combineReducers } from "redux";
+import { combineReducers, PreloadedState } from "redux";
 import { useDispatch } from "react-redux";
 import { configureStore} from "@reduxjs/toolkit";
 import productsReducer from "./features/products/productSlice";
@@ -57,7 +57,18 @@ const store = configureStore({
   preloadedState,
 });
 
+export const setupStore = (preloadedState: PreloadedState<RootState>)=>{
+  return configureStore({
+    reducer: rootReducer,
+    preloadedState
+  })
+}
+
 export default store;
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
+export type AppStore = ReturnType<typeof setupStore>
+
 export const useAppDispatch: () => AppDispatch = useDispatch
+
+export {rootReducer, preloadedState}

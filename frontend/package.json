@@ -1,17 +1,22 @@
 {
   "name": "frontend",
   "proxy": "http://127.0.0.1:5200/",
+  "jest": {
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ]
+  },
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.4",
-    "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "@types/react": "^18.0.20",
     "@types/react-dom": "^18.0.6",
     "@types/react-redux": "^7.1.24",
     "axios": "^0.20.0",
+    "msw": "^0.47.4",
     "react": "^18.2.0",
     "react-bootstrap": "^1.3.0",
     "react-dom": "^18.2.0",
@@ -47,9 +52,16 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@types/enzyme": "^3.10.12",
+    "@types/jest": "^29.1.2",
+    "@types/mocha": "^10.0.0",
     "@types/react-helmet": "^6.1.5",
     "@types/react-router": "^5.1.19",
     "@types/react-router-bootstrap": "^0.24.5",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
+    "enzyme-to-json": "^3.6.2",
     "typescript": "^4.8.4"
   }
 }

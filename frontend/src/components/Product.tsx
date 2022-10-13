@@ -5,36 +5,37 @@ import Rating from './Rating'
 import {IProduct} from '../types/utils'
 
 interface ProductProps {
-  product: Product
+  id: string,
+  image: string,
+  name: string,
+  rating: number,
+  numReviews: number,
+  price: number
 }
-
-interface Product extends IProduct{
-  rating: number
-}
-const Product = ({ product }: any) => {
+const Product = ({id, image, name, rating, numReviews,price}:ProductProps) => {
 
   return (
     <>
       <Card className='my-3 p-3 rounded'>
-      <Link to={`/product/${product._id}`}>
-        <Card.Img src={product.image} variant='top' />
+      <Link to={`/product/${id}`}>
+        <Card.Img src={image} variant='top' />
       </Link>
 
       <Card.Body>
-        <Link to={`/product/${product._id}`}>
+        <Link to={`/product/${id}`}>
           <Card.Title as='div'>
-            <strong>{product.name}</strong>
+            <strong>{name}</strong>
           </Card.Title>
         </Link>
 
         <Card.Text as='div'>
           <Rating
-            value={product.rating || 0}
-            text={`${product.numReviews} reviews`}
+            value={rating || 0}
+            text={`${numReviews} reviews`}
           />
         </Card.Text>
 
-        <Card.Text as='h3'>${product.price}</Card.Text>
+        <Card.Text as='h3'>${price}</Card.Text>
       </Card.Body>
     </Card>
     </>
