@@ -9,6 +9,8 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "client": "npm start --prefix frontend",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "deploy": "git add . && git commit -m Heroku && git push heroku master",
+    "postinstall": "tsc",
     "data:import": "node backend/seeder",
     "data:destroy": "node backend/seeder -d",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
