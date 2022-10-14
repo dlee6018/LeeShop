@@ -1,27 +1,23 @@
-import { RouteComponentProps } from "react-router-dom";
-interface Props extends RouteComponentProps {
-
+interface OrderItems{
+    name: string,
+    qty: number,
+    image: string,
+    price: number,
+    _id: string
 }
-// interface orderItems{
-//     name: string,
-//     qty: number,
-//     image: string,
-//     price: number,
-//     products: Types.ObjectId
-// }
 
 export interface IShippingAddress{
-    address: string,
-    city: string,
-    postalCode: string,
-    country: string
+    address: string ,
+    city: string ,
+    postalCode: string ,
+    country: string 
 }
-// interface paymentResult{
-//     id: string,
-//     status: string,
-//     update_time: string,
-//     email_address: string
-// }
+interface IPaymentResult{
+    id: string,
+    status: string,
+    update_time: string,
+    email_address: string
+}
 interface Review {
     _id: string,
     name: string,
@@ -31,21 +27,33 @@ interface Review {
     createdAt: string,
 }
 
-// export interface IOrder extends Document{
-//     user: IUser,
-//     orderItems: Array<orderItems>,
-//     shippingAddress: shippingAddress,
-//     paymentMethod: string,
-//     paymentResult: paymentResult,
-//     taxPrice: number,
-//     shippingPrice: number,
-//     totalPrice: number,
-//     isPaid: boolean,
-//     paidAt: Date,
-//     isDelivered: boolean,
-//     deliveredAt: Date
-// }
+export interface IOrder{
+    user: IUserInfo,
+    orderItems: Array<OrderItems>,
+    shippingAddress: IShippingAddress,
+    paymentMethod: string,
+    paymentResult: IPaymentResult,
+    taxPrice: number,
+    shippingPrice: number,
+    totalPrice: number,
+    isPaid: boolean,
+    paidAt: string,
+    isDelivered: boolean,
+    deliveredAt: string,
+    itemsPrice:number,
+    createdAt: string,
+    _id: string,
+}
 
+export interface ICreateOrder{
+    orderItems: Array<OrderItems>,
+    shippingAddress: IShippingAddress,
+    paymentMethod: string,
+    itemsPrice: number,
+    shippingPrice: number,
+    taxPrice: number,
+    totalPrice: number
+}
 
 export interface IProduct{
     _id: string,
@@ -54,15 +62,11 @@ export interface IProduct{
     brand: string,
     category: string,
     description: string,
-    reviews?: Array<Review> ,
-    rating?: number,
-    numReviews?: number,
+    reviews: Array<Review> ,
+    rating: number,
+    numReviews: number,
     price: number,
     countInStock: number,
-}
-
-export interface IProductDetails{
-
 }
 
 export interface IUserInfo {
@@ -73,4 +77,3 @@ export interface IUserInfo {
     _id: string,
     token: string,
 }
-

@@ -6,20 +6,10 @@ import {
 } from "@reduxjs/toolkit";
 import axios from "axios";
 
-interface SearchInfo {
-  keyword: string,
-  pageNumber: number
-}
-export const getAllProducts = createAsyncThunk(
+export const getAllProducts = createAsyncThunk<any, {keyword: string, pageNumber: number}, {}>(
   "product/allProducts",
-  async (searchInfo:SearchInfo) => {
+  async ({keyword, pageNumber},) => {
     try {
-      let keyword = "";
-      let pageNumber = 1;
-      if (searchInfo) {
-        keyword = searchInfo.keyword;
-        pageNumber = searchInfo.pageNumber;
-      }
       const { data } = await axios.get(`/api/products?keyword=${keyword}&pageNumber=${pageNumber}`);
       return data;
     } catch (error: any) {
@@ -78,7 +68,17 @@ export const deleteProduct = createAsyncThunk<IProduct, string, {state: RootStat
   }
 );
 
-export const updateProduct = createAsyncThunk<IProduct, IProduct, {state: RootState}>(
+interface UpdateInfo {
+  _id: string,
+  name: string,
+  image: string,
+  brand: string,
+  category: string,
+  description: string,
+  price: number,
+  countInStock: number
+}
+export const updateProduct = createAsyncThunk<IProduct, UpdateInfo, {state: RootState}>(
   "products/updateProduct",
   async (product, { getState }) => {
     try {
@@ -112,9 +112,9 @@ export const updateProduct = createAsyncThunk<IProduct, IProduct, {state: RootSt
   }
 );
 
-export const createProduct = createAsyncThunk<IProduct, string, {state: RootState}>(
+export const createProduct = createAsyncThunk<IProduct, void, {state: RootState}>(
   "products/createProduct",
-  async (id, { getState }) => {
+  async (_:void, { getState }) => {
     try {
       const {
         users: { userInfo },
@@ -191,19 +191,36 @@ export const getTopProducts = createAsyncThunk("products/getTopProducts", async(
 
 
 interface ProductsState{
-  status: string | undefined,
-  error: string | undefined,
-  productList: Array<IProduct>,
-  page: number,
-  pages: number,
-  productCreate: {
-    createdStatus?: "loading" | "succeeded" | "failed",
+  productList: {
+    status: string,
+    error: any,
+    page: number,
+    pages: number,
+    products: Array<IProduct>
+  },
+  productDetails: {
+    status: string,
+    error: any,
     product?: IProduct
-  }
-  updatedStatus?:"loading" | "succeeded" | "failed",
-  productDetails? : IProduct,
-  topProducts: Array<IProduct>,
-  topProductsStatus?: "loading" | "succeeded" | "failed",
+  },
+  productCreate: {
+    status: string,
+    error:any,
+    product?: IProduct
+  },
+  productDelete:{
+    status:string,
+    error: any,
+  },
+  productUpdate:{
+    status: string,
+    error: any,
+  },
+  topProducts:{
+    status: string,
+    error: any,
+    products: Array<IProduct>
+  },
   productReview: {
     status: string | undefined,
     error: string | undefined
@@ -212,15 +229,34 @@ interface ProductsState{
 
 
 const initialState:ProductsState ={
-  status: undefined,
-  error: undefined,
-  productList:[],
-  topProducts:[],
-  page: 1,
-  pages: 1,
+  productList:{
+    status: "",
+    error: null,
+    page: 1,
+    pages: 1,
+    products: []
+  },
+  productDetails:{
+    status: "",
+    error: null, 
+  },
+  topProducts:{
+    status: "",
+    error: null,
+    products:[]
+  },
   productCreate:{
-
+    status: "",
+    error: null,
   }, 
+  productDelete:{
+    status: "",
+    error: null
+  },
+  productUpdate:{
+    status: "",
+    error: null
+  },
   productReview:{
     status: undefined,
     error: undefined
@@ -229,79 +265,76 @@ const initialState:ProductsState ={
 const productsSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {},
+  reducers: {
+    reset(state){
+      return initialState
+    }
+  },
   extraReducers(builder) {
     builder //list Products
       .addCase(getAllProducts.pending, (state, action) => {
-        state.status = "loading";
+        state.productList.status = "loading";
       })
       .addCase(getAllProducts.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.pages = action.payload.pages;
-        state.page = action.payload.page;
-
-        const products = action.payload.products;
-        state.productList = products
+        state.productList.status = "succeeded";
+        const {pages, page, products} = action.payload
+        state.productList.pages = pages;
+        state.productList.page = page;
+        state.productList.products = products
       })
       .addCase(getAllProducts.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      }) //product Details
+        state.productList.status = "failed";
+        state.productList.error = action.error.message;
+      }) 
       .addCase(getProductDetails.pending, (state, action) => {
-        state.status = "loading";
+        state.productDetails.status = "loading";
       })
       .addCase(getProductDetails.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        const product = action.payload
-        state.productDetails = product
+        state.productDetails.status = "succeeded";
+        state.productDetails.product = action.payload
         
       })
       .addCase(getProductDetails.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      }) //Delte Product
+        state.productDetails.status = "failed";
+        state.productDetails.error = action.error.message;
+      }) 
       .addCase(deleteProduct.pending, (state, action) => {
-        state.status = "loading";
+        state.productDelete.status = "loading";
       })
       .addCase(deleteProduct.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        // const id = action.payload;
-        // productsAdapter.removeOne(state, id);
+        state.productDelete.status = "succeeded";
       })
       .addCase(deleteProduct.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        state.productDelete.status = "failed";
+        state.productDelete.error = action.error.message;
       })
       .addCase(updateProduct.pending, (state, action) => {
-        state.updatedStatus = "loading";    
+        state.productUpdate.status = "loading";    
       })
       .addCase(updateProduct.fulfilled, (state, action) => {
-        // productsAdapter.upsertOne(state, action.payload);
-        state.updatedStatus = "succeeded"
-        state.productCreate.createdStatus = "loading";
+        state.productUpdate.status = "succeeded"
       })
       .addCase(createProduct.pending, (state, action) => {
-        state.productCreate.createdStatus = "loading";
+        state.productCreate.status = "loading";
       })
       .addCase(createProduct.fulfilled, (state, action) => {
-        state.productCreate.createdStatus = "succeeded";
-        state.updatedStatus = "loading"
+        state.productCreate.status = "succeeded";
         state.productCreate.product = action.payload
       })
       .addCase(createProduct.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+        state.productCreate.status = "failed";
+        state.productCreate.error = action.error.message;
       })
       .addCase(getTopProducts.pending, (state, action) => {
-        state.topProductsStatus = "loading"
+        state.topProducts.status = "loading"
       })
       .addCase(getTopProducts.fulfilled, (state, action) => {
-        state.topProductsStatus = "succeeded"
-        state.topProducts = action.payload
+        state.topProducts.status = "succeeded"
+        state.topProducts.products = action.payload
       })
       .addCase(getTopProducts.rejected,(state, action) => {
-        state.topProductsStatus = "failed"
-        state.error = action.error.message
+        state.topProducts.status = "failed"
+        state.topProducts.error = action.error.message
       })
       .addCase(createProductReview.pending, (state, action) => {
         state.productReview.status = "loading"
@@ -317,8 +350,9 @@ const productsSlice = createSlice({
 });
 
 
-export const getProductsStatus = (state:RootState) => state.products.status;
-export const getProductsError = (state:RootState) => state.products.error;
+
 export const selectAllProducts = (state: RootState) => state.products.productList
 export const selectProductDetails = (state: RootState) => state.products.productDetails
+export const {reset} = productsSlice.actions
+
 export default productsSlice.reducer;

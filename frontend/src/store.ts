@@ -1,40 +1,17 @@
-import { combineReducers } from "redux";
+import { IShippingAddress } from './types/utils';
+import { combineReducers, PreloadedState } from "redux";
 import { useDispatch } from "react-redux";
 import { configureStore} from "@reduxjs/toolkit";
-import {
-  productReviewCreateReducer,
-} from "./reducers/productReducers";
-import { cartReducer } from "./reducers/cartReducers";
-import {
-  userRegisterReducer,
-  userUpdateProfileReducer,
-  userListReducer,
-  userDeleteReducer,
-  userUpdateReducer,
-} from "./reducers/userReducers";
-import {
-  orderCreateReducer,
-  orderDetailsReducer,
-  orderPayReducer,
-  orderDeliverReducer,
-  orderListMyReducer,
-  orderListReducer,
-} from "./reducers/orderReducers";
 import productsReducer from "./features/products/productSlice";
 import usersReducer from "./features/users/userSlice";
 import cartsReducer from './features/cart/cartSlice'
+import ordersReducer from './features/orders/orderSlice'
 
 const rootReducer = combineReducers({
   products: productsReducer,
   users: usersReducer,
   cart: cartsReducer,
-  orderCreate: orderCreateReducer,
-  orderDetails: orderDetailsReducer,
-  orderPay: orderPayReducer,
-  orderDeliver: orderDeliverReducer,
-  orderListMy: orderListMyReducer,
-  orderList: orderListReducer,
-
+  orders: ordersReducer,
 });
 
 const cartItemsFromStorage = JSON.parse(
@@ -46,13 +23,18 @@ const userInfoFromStorage = JSON.parse(
 );
 
 const shippingAddressFromStorage = JSON.parse(
-  localStorage.getItem("shippingAddress") || "[]"
+  localStorage.getItem("shippingAddress") || "{}"
 );
 
 const preloadedState = {
   cart: {
     cartItems: cartItemsFromStorage,
-    shippingAddress: shippingAddressFromStorage,
+    shippingAddress: shippingAddressFromStorage as IShippingAddress,
+    paymentMethod: "",
+    itemsPrice: 0,
+    shippingPrice: 0,
+    taxPrice: 0,
+    totalPrice: 0
   },
   users: { 
     status: null,
@@ -65,6 +47,7 @@ const preloadedState = {
       status: null,
       error: null,
     },
+    userUpdateSuccess: false,
     userInfo: userInfoFromStorage },
 };
 
@@ -74,7 +57,18 @@ const store = configureStore({
   preloadedState,
 });
 
+export const setupStore = (preloadedState: PreloadedState<RootState>)=>{
+  return configureStore({
+    reducer: rootReducer,
+    preloadedState
+  })
+}
+
 export default store;
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
+export type AppStore = ReturnType<typeof setupStore>
+
 export const useAppDispatch: () => AppDispatch = useDispatch
+
+export {rootReducer, preloadedState}

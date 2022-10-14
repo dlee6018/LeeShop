@@ -8,13 +8,10 @@ import Paginate from "../components/Paginate";
 import {
   deleteProduct,
   getAllProducts,
-  getProductsError,
-  getProductsStatus,
-  selectAllProducts,
   createProduct,
 } from "../features/products/productSlice";
 import { getUserInfo } from "../features/users/userSlice";
-import {useAppSelector} from '../types/hooks'
+import {useAppDispatch, useAppSelector} from '../types/hooks'
 
 interface ProductListScreenProps {
   history:any,
@@ -23,32 +20,33 @@ interface ProductListScreenProps {
 const ProductListScreen = ({ history, match }:ProductListScreenProps) => {
   const pageNumber = match.params.pageNumber || 1;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const products = useSelector(selectAllProducts);
-  const page = useAppSelector((state) => state.products.page);
-  const pages = useAppSelector((state) => state.products.pages);
+  const productList = useAppSelector((state) => state.products.productList)
+  const {status, error, page, pages, products} = productList
 
-  const status = useSelector(getProductsStatus);
-  const error = useSelector(getProductsError);
 
   const [successDelete, setSuccessDelete] = useState(false);
-  const createdStatus = useAppSelector((state) => state.products.productCreate.createdStatus);
-  const createdProduct = useAppSelector((state) => state.products.productCreate.product)
+
+  const productCreate = useAppSelector((state) => state.products.productCreate)
+  const {status:createStatus, error:createError, product: createdProduct} = productCreate
+
+  const productDelete = useAppSelector((state) => state.products.productDelete)
+  const {status: deleteStatus, error: deleteError} = productDelete
+
   const userInfo = useSelector(getUserInfo);
 
   useEffect(() => {
     if (!userInfo || !userInfo.isAdmin) {
       history.push("/login");
     }
-    if (createdStatus === "succeeded" && createdProduct) {
+    if (createStatus === "succeeded" && createdProduct) {
       history.push(`/admin/product/${createdProduct._id}/edit`)
     } else {
       dispatch(getAllProducts({keyword : "", pageNumber}));
     }
     setSuccessDelete(false);
-    // dispatch(getAllProducts("", pageNumber));
-  }, [dispatch, history, userInfo, createdStatus, pageNumber, successDelete]);
+  }, [dispatch, history, userInfo, createStatus, pageNumber, successDelete]);
 
   const deleteHandler = (id:string) => {
     if (window.confirm("Are you sure")) {
@@ -58,7 +56,7 @@ const ProductListScreen = ({ history, match }:ProductListScreenProps) => {
   };
 
   const createProductHandler = () => {
-    dispatch(createProduct(match.params.id));
+    dispatch(createProduct());
   };
 
   return (
@@ -73,6 +71,10 @@ const ProductListScreen = ({ history, match }:ProductListScreenProps) => {
           </Button>
         </Col>
       </Row>
+      {deleteStatus==="loading" && <Loader />}
+      {deleteStatus ==="failed" && <Message variant='danger'>{deleteError}</Message>}
+      {createStatus ==="loading" && <Loader />}
+      {createStatus ==="failed" && <Message variant='danger'>{createError}</Message>}
       {status === "loading" ? (
         <Loader />
       ) : status == "error" ? (

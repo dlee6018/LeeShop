@@ -7,7 +7,6 @@ import {
     createEntityAdapter,
   } from "@reduxjs/toolkit";
 import axios from "axios";
-import { savePaymentMethod } from '../../actions/cartActions';
 
 interface addToCartParams {
     id: string,
@@ -27,7 +26,6 @@ export const addToCart = createAsyncThunk<CartProductInfo, addToCartParams, {sta
     const {id, qty} = addToCartParams
     const {data} = await axios.get(`/api/products/${id}`)
 
-    console.log(qty, "qty")
     const payload:CartProductInfo = {
         _id: data._id,
         name: data.name,
@@ -42,11 +40,27 @@ export const addToCart = createAsyncThunk<CartProductInfo, addToCartParams, {sta
 
 interface InitialState {
     cartItems: Array<CartProductInfo>,
-    shippingAddress: IShippingAddress | {}
+    shippingAddress: IShippingAddress,
+    paymentMethod: string,
+    itemsPrice: number,
+    shippingPrice: number,
+    taxPrice: number,
+    totalPrice: number
 }
 const initialState:InitialState = {
     cartItems: [],
-    shippingAddress: {},
+    shippingAddress:{
+        address: "",
+        city: "",
+        postalCode: "",
+        country:""
+    },
+    paymentMethod: "",
+    itemsPrice: 0,
+    shippingPrice: 0,
+    taxPrice: 0,
+    totalPrice: 0
+    
 }
 const cartSlice = createSlice({
     name : "cart",
@@ -55,6 +69,9 @@ const cartSlice = createSlice({
         removeFromCart(state, action){
             const id = action.payload
             state.cartItems = state.cartItems.filter((product) => product._id !== id)
+        },
+        clearCart(state){
+            state.cartItems = []
         },
         changeQuantity(state, action){
             const {id, qty} = action.payload
@@ -66,16 +83,27 @@ const cartSlice = createSlice({
         saveShippingAddress(state, action){
             const shippingInformation = action.payload
             state.shippingAddress = shippingInformation
+            localStorage.setItem('shippingAddress', JSON.stringify(shippingInformation))
         },
         savePaymentMethod(state, action) {
             const paymentInformation = action.payload
-            // state.paymentMethod = paymentInformation
+            state.paymentMethod = paymentInformation
+            localStorage.setItem('paymentMethod', JSON.stringify(paymentInformation))
+        },
+        calculateTotal(state, action){
+            state.itemsPrice = state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
+            state.itemsPrice = Number(state.itemsPrice.toFixed(2))
+            state.shippingPrice = state.itemsPrice > 100? 0: 10
+            state.taxPrice = (0.15 * state.itemsPrice)
+            state.taxPrice = Number(state.taxPrice.toFixed(2))
+            state.totalPrice = state.itemsPrice + state.shippingPrice + state.taxPrice
+            state.totalPrice = Number(state.totalPrice.toFixed(2))
+
         },
     },
     extraReducers: (builder) => {
         builder.addCase(addToCart.fulfilled, (state, action) => {
             const item = action.payload
-            console.log(item)
             const existItem = state.cartItems.find((product) => product._id === item._id)
             if (existItem){
                 state.cartItems = state.cartItems.map((product) => product._id === existItem._id ? item : product)
@@ -86,5 +114,5 @@ const cartSlice = createSlice({
     }
 })
 
-export const {removeFromCart, changeQuantity} = cartSlice.actions
+export const {removeFromCart, changeQuantity,saveShippingAddress, savePaymentMethod, calculateTotal, clearCart} = cartSlice.actions
 export default cartSlice.reducer;

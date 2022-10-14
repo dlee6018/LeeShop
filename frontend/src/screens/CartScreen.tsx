@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, ListGroup, Image, Form, Button, Card } from 'react-bootstrap'
 import Message from '../components/Message'
-import { addToCart, removeFromCart, changeQuantity } from '../features/cart/cartSlice'
-import { useAppSelector } from '../types/hooks'
+import { addToCart, removeFromCart} from '../features/cart/cartSlice'
+import { useAppDispatch, useAppSelector } from '../types/hooks'
 
 interface CartScreenProps {
   match:any,
@@ -16,7 +15,7 @@ const CartScreen = ({ match, location, history }:CartScreenProps) => {
 
   const qty = location.search ? Number(location.search.split('=')[1]) : 1
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const cart = useAppSelector((state) => state.cart)
   const { cartItems } = cart

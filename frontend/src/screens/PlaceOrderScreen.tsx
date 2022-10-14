@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch,} from 'react-redux'
 import Message from '../components/Message'
 import CheckoutSteps from '../components/CheckoutSteps'
-import { createOrder } from '../actions/orderActions'
-import { ORDER_CREATE_RESET } from '../constants/orderConstants'
-import { USER_DETAILS_RESET } from '../constants/userConstants'
+import {createOrder} from '../features/orders/orderSlice'
+import { useAppDispatch, useAppSelector } from '../types/hooks'
+import {calculateTotal} from '../features/cart/cartSlice'
+interface PlaceOrderScreenProps {
+  history:any
+}
+const PlaceOrderScreen = ({ history }:PlaceOrderScreenProps) => {
+  const dispatch = useAppDispatch()
 
-const PlaceOrderScreen = ({ history }) => {
-  const dispatch = useDispatch()
-
-  const cart = useSelector((state) => state.cart)
+  const cart = useAppSelector((state) => state.cart)
 
   if (!cart.shippingAddress.address) {
     history.push('/shipping')
@@ -19,34 +21,35 @@ const PlaceOrderScreen = ({ history }) => {
     history.push('/payment')
   }
   //   Calculate prices
-  const addDecimals = (num) => {
-    return (Math.round(num * 100) / 100).toFixed(2)
+  const addDecimals = (num:number) => {
+    return Number((Math.round(num * 100) / 100).toFixed(2))
   }
 
-  cart.itemsPrice = addDecimals(
-    cart.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
-  )
-  cart.shippingPrice = addDecimals(cart.itemsPrice > 100 ? 0 : 100)
-  cart.taxPrice = addDecimals(Number((0.15 * cart.itemsPrice).toFixed(2)))
-  cart.totalPrice = (
-    Number(cart.itemsPrice) +
-    Number(cart.shippingPrice) +
-    Number(cart.taxPrice)
-  ).toFixed(2)
+  // cart.itemsPrice = addDecimals(
+  //   cart.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
+  // )
+  // cart.shippingPrice = addDecimals(cart.itemsPrice > 100 ? 0 : 10)
+  // cart.taxPrice = addDecimals(Number((0.15 * cart.itemsPrice).toFixed(2)))
+  // cart.totalPrice = Number((
+  //   Number(cart.itemsPrice) +
+  //   Number(cart.shippingPrice) +
+  //   Number(cart.taxPrice)
+  // ).toFixed(2))
 
-  const orderCreate = useSelector((state) => state.orderCreate)
-  const { order, success, error } = orderCreate
+  const orderCreate = useAppSelector((state) => state.orders.createOrder)
+  const { order, status, error } = orderCreate
 
   useEffect(() => {
-    if (success) {
+    dispatch(calculateTotal(""))
+    if (status === "succeeded" && order) {
+      console.log(order._id, "id")
       history.push(`/order/${order._id}`)
-      dispatch({ type: USER_DETAILS_RESET })
-      //dispatch({ type: ORDER_CREATE_RESET })
     }
     // eslint-disable-next-line
-  }, [history, success])
+  }, [history, status])
 
   const placeOrderHandler = () => {
+    // if (cart.paymentMethod && cart.itemsPrice && cart.shippingPrice && cart.taxPrice && cart.totalPrice)
     dispatch(
       createOrder({
         orderItems: cart.cartItems,
@@ -100,7 +103,7 @@ const PlaceOrderScreen = ({ history }) => {
                           />
                         </Col>
                         <Col>
-                          <Link to={`/product/${item.product}`}>
+                          <Link to={`/product/${item._id}`}>
                             {item.name}
                           </Link>
                         </Col>
@@ -152,7 +155,7 @@ const PlaceOrderScreen = ({ history }) => {
                 <Button
                   type='button'
                   className='btn-block'
-                  disabled={cart.cartItems === 0}
+                  disabled={cart.cartItems.length === 0}
                   onClick={placeOrderHandler}
                 >
                   Place Order

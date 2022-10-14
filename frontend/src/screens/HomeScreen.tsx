@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "react-bootstrap";
 import Product from "../components/Product";
 import Message from "../components/Message";
@@ -9,14 +8,11 @@ import Paginate from "../components/Paginate";
 import ProductCarousel from "../components/ProductCarousel";
 import Meta from "../components/Meta";
 import {
-  getProductsStatus,
-  getProductsError,
   getAllProducts,
 } from "../features/products/productSlice";
-import { RootState } from "../store";
+import { useAppDispatch, useAppSelector } from "../types/hooks";
 
-
-type HomeScreenProps = {
+interface HomeScreenProps {
   match:any
 }
 const HomeScreen = ({ match }:HomeScreenProps) => {
@@ -24,18 +20,11 @@ const HomeScreen = ({ match }:HomeScreenProps) => {
 
   const pageNumber = match.params.pageNumber || 1;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const products = useSelector((state:RootState) => state.products.productList);
-  const status = useSelector(getProductsStatus);
-  const error = useSelector(getProductsError);
-  const page = useSelector((state:RootState) => state.products.page);
-  const pages = useSelector((state:RootState) => state.products.pages);
+  const productList = useAppSelector((state) => state.products.productList)
+  const {status, error, page, pages, products} = productList
 
-  const searchInfo = {
-    keyword,
-    pageNumber,
-  };
   useEffect(() => {
     dispatch(getAllProducts({ keyword, pageNumber }));
   }, [dispatch, keyword, pageNumber]);
@@ -59,7 +48,7 @@ const HomeScreen = ({ match }:HomeScreenProps) => {
           <Row>
             {products.map((product) => (
               <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
-                <Product product={product} />
+                <Product id = {product._id} image ={product.image} name = {product.name} rating = {product.rating} numReviews = {product.numReviews} price = {product.price} />
               </Col>
             ))}
           </Row>
