@@ -1,7 +1,6 @@
 import path from "path";
 import express from "express";
 import dotenv from "dotenv";
-import colors from "colors";
 import morgan from "morgan";
 import { notFound, errorHandler } from "./middleware/errorMiddleware";
 import connectDB from "./config/db";
@@ -11,6 +10,7 @@ import orderRoutes from "./routes/orderRoutes";
 import uploadRoutes from "./routes/uploadRoutes";
 
 dotenv.config();
+
 
 connectDB();
 
@@ -31,14 +31,14 @@ app.get("/api/config/paypal", (req, res) =>
   res.send(process.env.PAYPAL_CLIENT_ID)
 );
 
-// const __dirname = path.resolve();
+const dirname = path.resolve();
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/frontend/build")));
-
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+  console.log(__dirname)
   app.get("*", (req, res) =>
-    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"))
+    res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"))
   );
 } else {
   app.get("/", (req, res) => {
